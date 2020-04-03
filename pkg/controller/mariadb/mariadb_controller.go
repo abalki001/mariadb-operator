@@ -112,6 +112,11 @@ func (r *ReconcileMariaDB) Reconcile(request reconcile.Request) (reconcile.Resul
 	
 	var result *reconcile.Result
 	
+	result, err = r.ensureSecret(request, instance, r.mariadbAuthSecret(instance))
+	if result != nil {
+		return *result, err
+	}
+	
 	result, err = r.ensureDeployment(request, instance, r.mariadbDeployment(instance))
 	if result != nil {
 		return *result, err

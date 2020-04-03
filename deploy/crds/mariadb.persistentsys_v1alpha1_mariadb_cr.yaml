@@ -4,4 +4,4 @@ metadata:
   name: example-mariadb
 spec:
   # Add fields here
-  size: 3
+  size: 2 
