@@ -1,0 +1,7 @@
+apiVersion: mariadb.persistentsys/v1alpha1
+kind: MariaDB
+metadata:
+  name: example-mariadb
+spec:
+  # Add fields here
+  size: 3
