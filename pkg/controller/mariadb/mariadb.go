@@ -35,6 +35,9 @@ func (r *ReconcileMariaDB) mariadbDeployment(v *mariadbv1alpha1.MariaDB) *appsv1
 	labels := labels(v, "mariadb")
 	size := v.Spec.Size
 
+	dbname := v.Spec.Database
+	rootpwd := v.Spec.Rootpwd
+
 	userSecret := &corev1.EnvVarSource{
 		SecretKeyRef: &corev1.SecretKeySelector{
 			LocalObjectReference: corev1.LocalObjectReference{Name: mysqlAuthName()},
@@ -75,11 +78,11 @@ func (r *ReconcileMariaDB) mariadbDeployment(v *mariadbv1alpha1.MariaDB) *appsv1
 						Env:	[]corev1.EnvVar{
 							{
 								Name:	"MYSQL_ROOT_PASSWORD",
-								Value: 	"password",
+								Value: 	rootpwd,
 							},
 							{
 								Name:	"MYSQL_DATABASE",
-								Value:	"visitors",
+								Value:	dbname,
 							},
 							{
 								Name:	"MYSQL_USER",
@@ -158,15 +161,19 @@ func (r *ReconcileMariaDB) handleMariadbChanges(v *mariadbv1alpha1.MariaDB) (*re
 }
 
 func (r *ReconcileMariaDB) mariadbAuthSecret(v *mariadbv1alpha1.MariaDB) *corev1.Secret {
+
+	username := v.Spec.Username
+	password := v.Spec.Password
+
 	secret := &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:		mysqlAuthName(),
 			Namespace:	v.Namespace,
 		},
 		Type: "Opaque",
-		StringData: map[string]string{
-			"username": "user1",
-			"password": "user1",
+		Data: map[string]string{
+			"username": username,
+			"password": password,
 		},
 	}
 	controllerutil.SetControllerReference(v, secret, r.scheme)

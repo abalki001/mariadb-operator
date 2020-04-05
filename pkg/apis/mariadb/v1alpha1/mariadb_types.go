@@ -15,6 +15,17 @@ type MariaDBSpec struct {
 
 	// Size is the size of the deployment
 	Size int32 `json:"size"`
+
+	// Databse additional user details (base64 encoded)
+	Username string `json:"username"`
+	Password string `json:"password"`
+
+	// New Database name
+	Database string `json:"database"`
+
+	// Root user password
+	Rootpwd string `json:"rootpwd"`
+
 }
 
 // MariaDBStatus defines the observed state of MariaDB
