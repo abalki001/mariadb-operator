@@ -86,11 +86,11 @@ func (r *ReconcileMariaDB) mariadbDeployment(v *mariadbv1alpha1.MariaDB) *appsv1
 							},
 							{
 								Name:	"MYSQL_USER",
-								Value: userSecret,
+								ValueFrom: userSecret,
 							},
 							{
 								Name:	"MYSQL_PASSWORD",
-								Value: passwordSecret,
+								ValueFrom: passwordSecret,
 							},
 						},
 					}},

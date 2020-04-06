@@ -12,8 +12,8 @@ spec:
   # New Database name
   database: test-db
   # Database additional user details (base64 encoded)
-  username: ZGItdXNlcg==
-  password: ZGItdXNlcg==
+  username: db-user 
+  password: db-user 
 
 
 
