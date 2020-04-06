@@ -1,7 +1,21 @@
 apiVersion: mariadb.persistentsys/v1alpha1
 kind: MariaDB
 metadata:
-  name: example-mariadb
+  name: mariadb
 spec:
   # Add fields here
-  size: 2 
+  size: 1
+  
+  # Root user password
+  rootpwd: password
+
+  # New Database name
+  database: test-db
+  # Database additional user details (base64 encoded)
+  username: ZGItdXNlcg==
+  password: ZGItdXNlcg==
+
+
+
+
+

@@ -171,9 +171,9 @@ func (r *ReconcileMariaDB) mariadbAuthSecret(v *mariadbv1alpha1.MariaDB) *corev1
 			Namespace:	v.Namespace,
 		},
 		Type: "Opaque",
-		Data: map[string]string{
-			"username": username,
-			"password": password,
+		Data: map[string][]byte{
+			"username": []byte(username),
+			"password": []byte(password),
 		},
 	}
 	controllerutil.SetControllerReference(v, secret, r.scheme)

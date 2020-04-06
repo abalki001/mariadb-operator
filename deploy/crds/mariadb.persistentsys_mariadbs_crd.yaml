@@ -31,12 +31,28 @@ spec:
         spec:
           description: MariaDBSpec defines the desired state of MariaDB
           properties:
+            database:
+              description: New Database name
+              type: string
+            password:
+              description: Database additional user password (base64 encoded)
+              type: string
+            rootpwd:
+              description: Root user password
+              type: string
             size:
               description: Size is the size of the deployment
               format: int32
               type: integer
+            username:
+              description: Database additional user details (base64 encoded)
+              type: string
           required:
+          - database
+          - password
+          - rootpwd
           - size
+          - username
           type: object
         status:
           description: MariaDBStatus defines the observed state of MariaDB
