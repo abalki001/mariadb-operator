@@ -3,6 +3,7 @@ package mariadb
 import (
 	"context"
 	"time"
+	b64 "encoding/base64"
 
 	mariadbv1alpha1 "github.com/persistentsys/mariadb-operator/pkg/apis/mariadb/v1alpha1"
 
@@ -78,7 +79,7 @@ func (r *ReconcileMariaDB) mariadbDeployment(v *mariadbv1alpha1.MariaDB) *appsv1
 						Env:	[]corev1.EnvVar{
 							{
 								Name:	"MYSQL_ROOT_PASSWORD",
-								Value: 	rootpwd,
+								Value: 	b64.StdEncoding.EncodeToString([]byte(rootpwd)),
 							},
 							{
 								Name:	"MYSQL_DATABASE",
@@ -86,11 +87,11 @@ func (r *ReconcileMariaDB) mariadbDeployment(v *mariadbv1alpha1.MariaDB) *appsv1
 							},
 							{
 								Name:	"MYSQL_USER",
-								ValueFrom: userSecret,
+								ValueFrom: b64.StdEncoding.EncodeToString([]byte(userSecret)),
 							},
 							{
 								Name:	"MYSQL_PASSWORD",
-								ValueFrom: passwordSecret,
+								ValueFrom: b64.StdEncoding.EncodeToString([]byte(passwordSecret)),
 							},
 						},
 					}},
