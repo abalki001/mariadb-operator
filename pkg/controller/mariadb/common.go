@@ -81,8 +81,8 @@ func (r *ReconcileMariaDB) ensureService(request reconcile.Request,
 
 func labels(v *mariadbv1alpha1.MariaDB, tier string) map[string]string {
 	return map[string]string{
-		"app":             "nginx",
-		"nginx_cr": v.Name,
+		"app":             "MariaDB",
+		"MariaDB_cr": v.Name,
 		"tier":            tier,
 	}
 }
