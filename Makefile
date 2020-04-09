@@ -53,23 +53,6 @@ code-gen: ## Run the operator-sdk commands to generated code (k8s and openapi)
 	@echo Updating the CRD files with the OpenAPI validations
 	operator-sdk generate openapi
 
-##@ Tests
-
-test-e2e: ## Run integration e2e tests with different options.
-	@echo ... Running the same e2e tests with different args ...
-	@echo ... Running locally ...
-	- kubectl create namespace ${NAMESPACE} || true
-	- operator-sdk test local ./test/e2e --up-local --namespace=${NAMESPACE}
-	@echo ... Running NOT in parallel ...
-	- operator-sdk test local ./test/e2e --go-test-flags "-v -parallel=1"
-	@echo ... Running in parallel ...
-	- operator-sdk test local ./test/e2e --go-test-flags "-v -parallel=2"
-	@echo ... Running without options/args ...
-	- operator-sdk test local ./test/e2e
-	@echo ... Running with the --debug param ...
-	- operator-sdk test local ./test/e2e --debug
-	@echo ... Running with the --verbose param ...
-	- operator-sdk test local ./test/e2e --verbose
 
 .PHONY: help
 help: ## Display this help
