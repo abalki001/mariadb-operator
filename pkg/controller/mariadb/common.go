@@ -7,13 +7,11 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-var log = logf.Log.WithName("common")
 
 func (r *ReconcileMariaDB) ensureDeployment(request reconcile.Request,
 	instance *mariadbv1alpha1.MariaDB,
