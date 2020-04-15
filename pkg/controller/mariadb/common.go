@@ -12,6 +12,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
+var log = logf.Log.WithName("common")
+
 func (r *ReconcileMariaDB) ensureDeployment(request reconcile.Request,
 	instance *mariadbv1alpha1.MariaDB,
 	dep *appsv1.Deployment,

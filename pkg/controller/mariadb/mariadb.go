@@ -15,6 +15,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
+var log = logf.Log.WithName("mariadb")
+
 const mariadbPort = 80
 //const mariadbNodePort = 80
 //const mariadbImage = "mariadb/server:10.3"
