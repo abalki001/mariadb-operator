@@ -28,6 +28,9 @@ type MariaDBSpec struct {
 	// Root user password
 	Rootpwd string `json:"rootpwd"`
 
+	// Image name with version
+	Image string `json:"image"`
+
 }
 
 // MariaDBStatus defines the observed state of MariaDB

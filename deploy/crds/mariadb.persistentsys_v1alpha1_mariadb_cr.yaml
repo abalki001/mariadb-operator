@@ -15,6 +15,9 @@ spec:
   username: db-user 
   password: db-user 
 
+  # Image name with version
+  image: "mariadb/server:10.3"
+
 
 
 

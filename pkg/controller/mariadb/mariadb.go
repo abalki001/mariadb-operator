@@ -17,7 +17,7 @@ import (
 
 const mariadbPort = 80
 //const mariadbNodePort = 80
-const mariadbImage = "mariadb/server:10.3"
+//const mariadbImage = "mariadb/server:10.3"
 
 func mariadbDeploymentName(v *mariadbv1alpha1.MariaDB) string {
 	return v.Name + "-deployment"
@@ -34,6 +34,7 @@ func mysqlAuthName() string {
 func (r *ReconcileMariaDB) mariadbDeployment(v *mariadbv1alpha1.MariaDB) *appsv1.Deployment {
 	labels := labels(v, "mariadb")
 	size := v.Spec.Size
+	image := v.Spec.Image
 
 	dbname := v.Spec.Database
 	rootpwd := v.Spec.Rootpwd
@@ -68,7 +69,7 @@ func (r *ReconcileMariaDB) mariadbDeployment(v *mariadbv1alpha1.MariaDB) *appsv1
 				},
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{{
-						Image:	mariadbImage,
+						Image:	image,
 						ImagePullPolicy: corev1.PullAlways,
 						Name:	"mariadb-service",
 						Ports:	[]corev1.ContainerPort{{
