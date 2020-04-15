@@ -12,12 +12,14 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 var log = logf.Log.WithName("mariadb")
 
 const mariadbPort = 80
+
 //const mariadbNodePort = 80
 //const mariadbImage = "mariadb/server:10.3"
 
@@ -44,21 +46,21 @@ func (r *ReconcileMariaDB) mariadbDeployment(v *mariadbv1alpha1.MariaDB) *appsv1
 	userSecret := &corev1.EnvVarSource{
 		SecretKeyRef: &corev1.SecretKeySelector{
 			LocalObjectReference: corev1.LocalObjectReference{Name: mysqlAuthName()},
-			Key: "username",
+			Key:                  "username",
 		},
 	}
-	
+
 	passwordSecret := &corev1.EnvVarSource{
 		SecretKeyRef: &corev1.SecretKeySelector{
 			LocalObjectReference: corev1.LocalObjectReference{Name: mysqlAuthName()},
-			Key: "password",
+			Key:                  "password",
 		},
 	}
-	
+
 	dep := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:		mariadbDeploymentName(v),
-			Namespace: 	v.Namespace,
+			Name:      mariadbDeploymentName(v),
+			Namespace: v.Namespace,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: &size,
@@ -71,28 +73,28 @@ func (r *ReconcileMariaDB) mariadbDeployment(v *mariadbv1alpha1.MariaDB) *appsv1
 				},
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{{
-						Image:	image,
+						Image:           image,
 						ImagePullPolicy: corev1.PullAlways,
-						Name:	"mariadb-service",
-						Ports:	[]corev1.ContainerPort{{
-							ContainerPort: 	mariadbPort,
-							Name:			"mariadb",
+						Name:            "mariadb-service",
+						Ports: []corev1.ContainerPort{{
+							ContainerPort: mariadbPort,
+							Name:          "mariadb",
 						}},
-						Env:	[]corev1.EnvVar{
+						Env: []corev1.EnvVar{
 							{
-								Name:	"MYSQL_ROOT_PASSWORD",
-								Value: 	rootpwd,
+								Name:  "MYSQL_ROOT_PASSWORD",
+								Value: rootpwd,
 							},
 							{
-								Name:	"MYSQL_DATABASE",
-								Value:	dbname,
+								Name:  "MYSQL_DATABASE",
+								Value: dbname,
 							},
 							{
-								Name:	"MYSQL_USER",
+								Name:      "MYSQL_USER",
 								ValueFrom: userSecret,
 							},
 							{
-								Name:	"MYSQL_PASSWORD",
+								Name:      "MYSQL_PASSWORD",
 								ValueFrom: passwordSecret,
 							},
 						},
@@ -111,16 +113,16 @@ func (r *ReconcileMariaDB) mariadbService(v *mariadbv1alpha1.MariaDB) *corev1.Se
 
 	s := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:		mariadbServiceName(v),
-			Namespace: 	v.Namespace,
+			Name:      mariadbServiceName(v),
+			Namespace: v.Namespace,
 		},
 		Spec: corev1.ServiceSpec{
 			Selector: labels,
 			Ports: []corev1.ServicePort{{
-				Protocol: corev1.ProtocolTCP,
-				Port: mariadbPort,
+				Protocol:   corev1.ProtocolTCP,
+				Port:       mariadbPort,
 				TargetPort: intstr.FromInt(mariadbPort),
-				NodePort: 30685,
+				NodePort:   30685,
 			}},
 			Type: corev1.ServiceTypeNodePort,
 		},
@@ -130,7 +132,7 @@ func (r *ReconcileMariaDB) mariadbService(v *mariadbv1alpha1.MariaDB) *corev1.Se
 	return s
 }
 
-func (r *ReconcileMariaDB) updateMariadbStatus(v *mariadbv1alpha1.MariaDB) (error) {
+func (r *ReconcileMariaDB) updateMariadbStatus(v *mariadbv1alpha1.MariaDB) error {
 	//v.Status.BackendImage = mariadbImage
 	err := r.client.Status().Update(context.TODO(), v)
 	return err
@@ -144,7 +146,7 @@ func (r *ReconcileMariaDB) handleMariadbChanges(v *mariadbv1alpha1.MariaDB) (*re
 	}, found)
 	if err != nil {
 		// The deployment may not have been created yet, so requeue
-		return &reconcile.Result{RequeueAfter:5 * time.Second}, err
+		return &reconcile.Result{RequeueAfter: 5 * time.Second}, err
 	}
 
 	size := v.Spec.Size
@@ -170,8 +172,8 @@ func (r *ReconcileMariaDB) mariadbAuthSecret(v *mariadbv1alpha1.MariaDB) *corev1
 
 	secret := &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:		mysqlAuthName(),
-			Namespace:	v.Namespace,
+			Name:      mysqlAuthName(),
+			Namespace: v.Namespace,
 		},
 		Type: "Opaque",
 		Data: map[string][]byte{
