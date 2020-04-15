@@ -43,6 +43,19 @@ func (r *ReconcileMariaDB) ensureDeployment(request reconcile.Request,
 		return &reconcile.Result{}, err
 	}
 
+	// Ensure the deployment size is same as the spec
+	size := instance.Spec.Size
+	if *dep.Spec.Replicas != size {
+		dep.Spec.Replicas = &size
+		err = r.client.Update(context.TODO(), dep)
+		if err != nil {
+			log.Error(err, "Failed to update Deployment.", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
+			return &reconcile.Result{}, err
+		}
+		log.Info("Updated Deployment size to", dep.Spec.Replicas)
+
+	}
+
 	return nil, nil
 }
 
@@ -78,15 +91,13 @@ func (r *ReconcileMariaDB) ensureService(request reconcile.Request,
 	return nil, nil
 }
 
-
 func labels(v *mariadbv1alpha1.MariaDB, tier string) map[string]string {
 	return map[string]string{
-		"app":             "MariaDB",
+		"app":        "MariaDB",
 		"MariaDB_cr": v.Name,
-		"tier":            tier,
+		"tier":       tier,
 	}
 }
-
 
 func (r *ReconcileMariaDB) ensureSecret(request reconcile.Request,
 	instance *mariadbv1alpha1.MariaDB,
@@ -94,8 +105,8 @@ func (r *ReconcileMariaDB) ensureSecret(request reconcile.Request,
 ) (*reconcile.Result, error) {
 	found := &corev1.Secret{}
 	err := r.client.Get(context.TODO(), types.NamespacedName{
-		Name:		s.Name,
-		Namespace:	instance.Namespace,
+		Name:      s.Name,
+		Namespace: instance.Namespace,
 	}, found)
 	if err != nil && errors.IsNotFound(err) {
 		// Create the secret
@@ -118,4 +129,3 @@ func (r *ReconcileMariaDB) ensureSecret(request reconcile.Request,
 
 	return nil, nil
 }
-
