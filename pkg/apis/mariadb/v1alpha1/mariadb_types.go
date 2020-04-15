@@ -37,7 +37,7 @@ type MariaDBStatus struct {
 	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
 
 	// Nodes are the names of the pods
-	Nodes []string `json:"nodes"`
+	Nodes []string `json:"nodes,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
