@@ -22,7 +22,7 @@ const mariadbPort = 80
 //const mariadbImage = "mariadb/server:10.3"
 
 func mariadbDeploymentName(v *mariadbv1alpha1.MariaDB) string {
-	return v.Name + "-deployment"
+	return v.Name + "-server"
 }
 
 func mariadbServiceName(v *mariadbv1alpha1.MariaDB) string {

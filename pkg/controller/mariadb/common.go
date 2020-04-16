@@ -57,6 +57,26 @@ func (r *ReconcileMariaDB) ensureDeployment(request reconcile.Request,
 
 	}
 
+	// Ensure image name is correct, update image if required
+	image := instance.Spec.Image
+	var currentImage string = ""
+
+	if found.Spec.Template.Spec.Containers != nil {
+		currentImage = found.Spec.Template.Spec.Containers[0].Image
+	}
+
+	if image != currentImage {
+		dep.Spec.Template.Spec.Containers[0].Image = image
+		err = r.client.Update(context.TODO(), dep)
+		if err != nil {
+			log.Error(err, "Failed to update Deployment for image name.", "Deployment.Namespace", found.Namespace, "Deployment.Name", found.Name)
+			return &reconcile.Result{}, err
+		}
+		log.Info("Updated Deployment image from", currentImage, " to", image)
+	}
+
+
+
 	return nil, nil
 }
 
