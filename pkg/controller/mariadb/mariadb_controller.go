@@ -4,14 +4,16 @@ import (
 	"context"
 
 	mariadbv1alpha1 "github.com/persistentsys/mariadb-operator/pkg/apis/mariadb/v1alpha1"
-	corev1 "k8s.io/api/core/v1"
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
+
 	//metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	//"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
+
 	//"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
@@ -61,12 +63,12 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	if err != nil {
 		return err
 	}
-	
+
 	err = c.Watch(&source.Kind{Type: &corev1.Service{}}, &handler.EnqueueRequestForOwner{
 		IsController: true,
 		OwnerType:    &mariadbv1alpha1.MariaDB{},
 	})
-	
+
 	if err != nil {
 		return err
 	}
@@ -109,14 +111,14 @@ func (r *ReconcileMariaDB) Reconcile(request reconcile.Request) (reconcile.Resul
 		// Error reading the object - requeue the request.
 		return reconcile.Result{}, err
 	}
-	
+
 	var result *reconcile.Result
-	
+
 	result, err = r.ensureSecret(request, instance, r.mariadbAuthSecret(instance))
 	if result != nil {
 		return *result, err
 	}
-	
+
 	result, err = r.ensureDeployment(request, instance, r.mariadbDeployment(instance))
 	if result != nil {
 		return *result, err
@@ -133,12 +135,6 @@ func (r *ReconcileMariaDB) Reconcile(request reconcile.Request) (reconcile.Resul
 		return reconcile.Result{}, err
 	}
 
-	result, err = r.handleMariadbChanges(instance)
-	if result != nil {
-		return *result, err
-	}
-	
 	// Everything went fine, don't requeue
 	return reconcile.Result{}, nil
 }
-

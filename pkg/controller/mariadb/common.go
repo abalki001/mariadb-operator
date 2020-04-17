@@ -12,7 +12,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-
 func (r *ReconcileMariaDB) ensureDeployment(request reconcile.Request,
 	instance *mariadbv1alpha1.MariaDB,
 	dep *appsv1.Deployment,
@@ -44,17 +43,14 @@ func (r *ReconcileMariaDB) ensureDeployment(request reconcile.Request,
 		return &reconcile.Result{}, err
 	}
 
+	// Check for any updates for redeployment
+	applyChange := false
+
 	// Ensure the deployment size is same as the spec
 	size := instance.Spec.Size
 	if *dep.Spec.Replicas != size {
 		dep.Spec.Replicas = &size
-		err = r.client.Update(context.TODO(), dep)
-		if err != nil {
-			log.Error(err, "Failed to update Deployment.", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
-			return &reconcile.Result{}, err
-		}
-		log.Info("Updated Deployment size to", dep.Spec.Replicas)
-
+		applyChange = true
 	}
 
 	// Ensure image name is correct, update image if required
@@ -67,15 +63,17 @@ func (r *ReconcileMariaDB) ensureDeployment(request reconcile.Request,
 
 	if image != currentImage {
 		dep.Spec.Template.Spec.Containers[0].Image = image
-		err = r.client.Update(context.TODO(), dep)
-		if err != nil {
-			log.Error(err, "Failed to update Deployment for image name.", "Deployment.Namespace", found.Namespace, "Deployment.Name", found.Name)
-			return &reconcile.Result{}, err
-		}
-		log.Info("Updated Deployment image from", currentImage, " to", image)
+		applyChange = true
 	}
 
-
+	if applyChange {
+		err = r.client.Update(context.TODO(), dep)
+		if err != nil {
+			log.Error(err, "Failed to update Deployment.", "Deployment.Namespace", found.Namespace, "Deployment.Name", found.Name)
+			return &reconcile.Result{}, err
+		}
+		log.Info("Updated Deployment image. ")
+	}
 
 	return nil, nil
 }
