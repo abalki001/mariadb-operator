@@ -13,9 +13,8 @@ import (
 )
 
 const mariadbPort = 80
-
-//const mariadbNodePort = 80
-//const mariadbImage = "mariadb/server:10.3"
+const pvStorageName = "mariadb-pv-storage"
+const pvClaimName = "mariadb-pv-claim"
 
 func mariadbDeploymentName(v *mariadbv1alpha1.MariaDB) string {
 	return v.Name + "-server"
@@ -66,6 +65,16 @@ func (r *ReconcileMariaDB) mariadbDeployment(v *mariadbv1alpha1.MariaDB) *appsv1
 					Labels: labels,
 				},
 				Spec: corev1.PodSpec{
+					Volumes: []corev1.Volume{
+						{
+							Name: pvStorageName,
+							VolumeSource: corev1.VolumeSource{
+								PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+									ClaimName: pvClaimName,
+								},
+							},
+						},
+					},
 					Containers: []corev1.Container{{
 						Image:           image,
 						ImagePullPolicy: corev1.PullAlways,
@@ -74,6 +83,12 @@ func (r *ReconcileMariaDB) mariadbDeployment(v *mariadbv1alpha1.MariaDB) *appsv1
 							ContainerPort: mariadbPort,
 							Name:          "mariadb",
 						}},
+						VolumeMounts: []corev1.VolumeMount{
+							{
+								Name:      pvStorageName,
+								MountPath: "/var/lib/mysql",
+							},
+						},
 						Env: []corev1.EnvVar{
 							{
 								Name:  "MYSQL_ROOT_PASSWORD",
@@ -109,13 +124,14 @@ func (r *ReconcileMariaDB) mariadbService(v *mariadbv1alpha1.MariaDB) *corev1.Se
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      mariadbServiceName(v),
 			Namespace: v.Namespace,
+			Labels:    labels,
 		},
 		Spec: corev1.ServiceSpec{
 			Selector: labels,
 			Ports: []corev1.ServicePort{{
 				Protocol:   corev1.ProtocolTCP,
 				Port:       mariadbPort,
-				TargetPort: intstr.FromInt(mariadbPort),
+				TargetPort: intstr.FromInt(3306),
 				NodePort:   30685,
 			}},
 			Type: corev1.ServiceTypeNodePort,
