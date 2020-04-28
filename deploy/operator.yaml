@@ -16,7 +16,7 @@ spec:
       containers:
         - name: mariadb-operator
           # Replace this with the built image name
-          image: quay.io/abalki/mariadb-operator:v0.0.1
+          image: quay.io/abalki/mariadb-operator:v0.0.2
           command:
           - mariadb-operator
           imagePullPolicy: Always
