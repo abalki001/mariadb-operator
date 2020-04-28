@@ -90,9 +90,9 @@ Events:                   <none>
 
 Test connectivity to MariaDB Server:
 ```
-# mysql -h 172.17.0.5 -P 3306 -u db-user -pdb-user
+# mysql -h 192.168.29.217 -P 30685 -u db-user -pdb-user
 ```
-where 172.17.0.5 is the IP of mariadb-server pod and 3306 is the Target Port.
+where 192.168.29.217 is the minikube IP and 30685 is the configured NodePort.
 If everything is correct, mysql prompt will be presented to the user.
 
 ## Upgrade MariaDB server version
