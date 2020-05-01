@@ -1,0 +1,12 @@
+apiVersion: mariadb.persistentsys/v1alpha1
+kind: Backup
+metadata:
+  name: mariadb-backup
+spec:
+  # Backup Path
+  backupPath: "/mnt/backup"
+
+  # Schedule period for the CronJob.
+  # This spec allow you setup the backup frequency
+  # Default: "0 0 * * *" # daily at 00:00
+  schedule: "*/10 * * * *"

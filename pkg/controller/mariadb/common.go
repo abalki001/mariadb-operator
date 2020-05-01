@@ -110,13 +110,14 @@ func (r *ReconcileMariaDB) ensureService(request reconcile.Request,
 	return nil, nil
 }
 
+/*
 func labels(v *mariadbv1alpha1.MariaDB, tier string) map[string]string {
 	return map[string]string{
 		"app":        "MariaDB",
 		"MariaDB_cr": v.Name,
 		"tier":       tier,
 	}
-}
+}*/
 
 func (r *ReconcileMariaDB) ensureSecret(request reconcile.Request,
 	instance *mariadbv1alpha1.MariaDB,
