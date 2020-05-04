@@ -10,17 +10,22 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	logf "sigs.k8s.io/controller-runtime/pkg/log"
 )
+
+var rf_log = logf.Log.WithName("resource_fetch")
 
 // Request object not found, could have been deleted after reconcile request.
 // Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
 func FetchDatabaseCR(name, namespace string, client client.Client) (*v1alpha1.MariaDB, error) {
+	rf_log.Info("Fetching Database CR ...")
 	db := &v1alpha1.MariaDB{}
 	err := client.Get(context.TODO(), types.NamespacedName{Name: name, Namespace: namespace}, db)
 	return db, err
 }
 
 func FetchBackupCR(name, namespace string, client client.Client) (*v1alpha1.Backup, error) {
+	rf_log.Info("Fetching Backup CR ...")
 	bkp := &v1alpha1.Backup{}
 	err := client.Get(context.TODO(), types.NamespacedName{Name: name, Namespace: namespace}, bkp)
 	return bkp, err
@@ -28,6 +33,7 @@ func FetchBackupCR(name, namespace string, client client.Client) (*v1alpha1.Back
 
 // FetchDatabasePod search in the cluster for 1 Pod managed by the Database Controller
 func FetchDatabasePod(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client client.Client) (*corev1.Pod, error) {
+	rf_log.Info("Fetching Database Pod ...")
 	listOps := buildDatabaseCriteria(bkp, db)
 	dbPodList := &corev1.PodList{}
 	err := client.List(context.TODO(), dbPodList, listOps)
@@ -45,6 +51,7 @@ func FetchDatabasePod(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client client.
 
 //FetchDatabaseService search in the cluster for 1 Service managed by the Database Controller
 func FetchDatabaseService(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client client.Client) (*corev1.Service, error) {
+	rf_log.Info("Fetching Database Service ...")
 	listOps := buildDatabaseCriteria(bkp, db)
 	dbServiceList := &corev1.ServiceList{}
 	err := client.List(context.TODO(), dbServiceList, listOps)
@@ -62,6 +69,7 @@ func FetchDatabaseService(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client cli
 
 //FetchCronJob returns the CronJob resource with the name in the namespace
 func FetchCronJob(name, namespace string, client client.Client) (*v1beta1.CronJob, error) {
+	rf_log.Info("Fetching CronJob ...")
 	cronJob := &v1beta1.CronJob{}
 	err := client.Get(context.TODO(), types.NamespacedName{Name: name, Namespace: namespace}, cronJob)
 	return cronJob, err
