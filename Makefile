@@ -9,6 +9,7 @@ install: ## Install all resources (CR/CRD's, RBAC and Operator)
 	- kubectl create namespace ${NAMESPACE}
 	@echo ....... Applying CRDs .......
 	- kubectl apply -f deploy/crds/mariadb.persistentsys_mariadbs_crd.yaml -n ${NAMESPACE}
+	- kubectl apply -f deploy/crds/mariadb.persistentsys_backups_crd.yaml -n ${NAMESPACE}
 	@echo ....... Applying Rules and Service Account .......
 	- kubectl apply -f deploy/role.yaml -n ${NAMESPACE}
 	- kubectl apply -f deploy/role_binding.yaml  -n ${NAMESPACE}
@@ -21,15 +22,18 @@ install: ## Install all resources (CR/CRD's, RBAC and Operator)
 	- kubectl apply -f deploy/mariadb_pvc.yaml -n ${NAMESPACE}
 	@echo ....... Creating the CRs .......
 	- kubectl apply -f deploy/crds/mariadb.persistentsys_v1alpha1_mariadb_cr.yaml -n ${NAMESPACE}
+	- kubectl apply -f deploy/crds/mariadb.persistentsys_v1alpha1_backup_cr.yaml -n ${NAMESPACE}
 
 uninstall: ## Uninstall all that all performed in the $ make install
 	@echo ....... Uninstalling .......
 	@echo ....... Deleting CRs.......
+	- kubectl delete -f deploy/crds/mariadb.persistentsys_v1alpha1_backup_cr.yaml -n ${NAMESPACE}
 	- kubectl delete -f deploy/crds/mariadb.persistentsys_v1alpha1_mariadb_cr.yaml -n ${NAMESPACE}
 	@echo ....... Deleting PV and PVC.......
 	- kubectl delete -f deploy/mariadb_pvc.yaml -n ${NAMESPACE}
 	- kubectl delete -f deploy/mariadb_pv.yaml -n ${NAMESPACE}
 	@echo ....... Deleting CRDs.......
+	- kubectl delete -f deploy/crds/mariadb.persistentsys_backups_crd.yaml -n ${NAMESPACE}
 	- kubectl delete -f deploy/crds/mariadb.persistentsys_mariadbs_crd.yaml -n ${NAMESPACE}
 	@echo ....... Deleting Rules and Service Account .......
 	- kubectl delete -f deploy/role.yaml -n ${NAMESPACE}

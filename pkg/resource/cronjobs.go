@@ -25,13 +25,13 @@ func NewBackupCronJob(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, scheme *runtim
 				Spec: batchv1.JobSpec{
 					Template: corev1.PodTemplateSpec{
 						Spec: corev1.PodSpec{
-							ServiceAccountName: "mariadb-operator",
+							ServiceAccountName: "mariadb-operator",	
 							Containers: []corev1.Container{
 								{
 									Name:    bkp.Name,
 									Image:   db.Spec.Image,
 									Command: []string{"/bin/sh", "-c"},
-									Args:    []string{"mysqldump  --lock-tables --all-databases > /home/backup.sql"},
+									Args:    []string{"echo 'Starting Cron' && mysqldump  --lock-tables --all-databases > /home/backup.sql"},
 									Env: []corev1.EnvVar{
 										{
 											Name:  "MYSQL_PWD",
