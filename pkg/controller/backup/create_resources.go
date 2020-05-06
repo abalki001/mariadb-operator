@@ -35,6 +35,18 @@ func (r *ReconcileBackup) getDatabaseService(bkp *v1alpha1.Backup, db *v1alpha1.
 	return nil
 }
 
+// NOTE: This data is required in order to create the secrets which will access the database container to do the backup
+func (r *ReconcileBackup) getDatabaseBackupService(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB) error {
+	dbService, err := service.FetchDatabaseBackupService(bkp, db, r.client)
+	if err != nil || dbService == nil {
+		if err := r.client.Create(context.TODO(), resource.NewDbBackupService(bkp, db, r.scheme)); err != nil {
+			return err
+		}
+	}
+	//r.dbService = dbService
+	return nil
+}
+
 // Check if the cronJob is created, if not create one
 func (r *ReconcileBackup) createCronJob(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB) error {
 	if _, err := service.FetchCronJob(bkp.Name, bkp.Namespace, r.client); err != nil {

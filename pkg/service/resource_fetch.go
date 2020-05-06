@@ -15,6 +15,7 @@ import (
 
 var rf_log = logf.Log.WithName("resource_fetch")
 
+// FetchDatabaseCR fetches CR of MariDB
 // Request object not found, could have been deleted after reconcile request.
 // Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
 func FetchDatabaseCR(name, namespace string, client client.Client) (*v1alpha1.MariaDB, error) {
@@ -24,6 +25,7 @@ func FetchDatabaseCR(name, namespace string, client client.Client) (*v1alpha1.Ma
 	return db, err
 }
 
+// FetchBackupCR fetches CR of Maria DB Backup object
 func FetchBackupCR(name, namespace string, client client.Client) (*v1alpha1.Backup, error) {
 	rf_log.Info("Fetching Backup CR ...")
 	bkp := &v1alpha1.Backup{}
@@ -67,6 +69,24 @@ func FetchDatabaseService(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client cli
 	return &srv, nil
 }
 
+//FetchDatabaseBackupService search in the cluster for 1 Service managed by the Backup Controller
+func FetchDatabaseBackupService(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client client.Client) (*corev1.Service, error) {
+	rf_log.Info("Fetching Database Backup Service ...")
+	listOps := buildDatabaseBackupCriteria(bkp, db)
+	bkpServiceList := &corev1.ServiceList{}
+	err := client.List(context.TODO(), bkpServiceList, listOps)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(bkpServiceList.Items) == 0 {
+		return nil, err
+	}
+
+	srv := bkpServiceList.Items[0]
+	return &srv, nil
+}
+
 //FetchCronJob returns the CronJob resource with the name in the namespace
 func FetchCronJob(name, namespace string, client client.Client) (*v1beta1.CronJob, error) {
 	rf_log.Info("Fetching CronJob ...")
@@ -79,5 +99,12 @@ func FetchCronJob(name, namespace string, client client.Client) (*v1beta1.CronJo
 func buildDatabaseCriteria(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB) *client.ListOptions {
 	labelSelector := labels.SelectorFromSet(utils.Labels(db, "mariadb"))
 	listOps := &client.ListOptions{Namespace: db.Namespace, LabelSelector: labelSelector}
+	return listOps
+}
+
+//buildDatabaseCreteria returns client.ListOptions required to fetch the secondary resource created by
+func buildDatabaseBackupCriteria(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB) *client.ListOptions {
+	labelSelector := labels.SelectorFromSet(utils.Labels(db, "mariadb-backup"))
+	listOps := &client.ListOptions{Namespace: bkp.Namespace, LabelSelector: labelSelector}
 	return listOps
 }

@@ -14,10 +14,7 @@ import (
 const pvStorageName = "mariadb-bkp-pv-storage"
 const pvClaimName = "mariadb-pv-claim"
 
-// const pvBkpBackupName = "mariadb-backup-storage"
-// const pvBkpClaimName = "mariadb-bkp-pv-claim"
-
-//Returns the NewBackupCronJob object for the Database Backup
+// NewBackupCronJob Returns the CronJob object for the Database Backup
 func NewBackupCronJob(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, scheme *runtime.Scheme) *v1beta1.CronJob {
 	cron := &v1beta1.CronJob{
 		ObjectMeta: v1.ObjectMeta{
@@ -47,7 +44,7 @@ func NewBackupCronJob(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, scheme *runtim
 									Name:    bkp.Name,
 									Image:   db.Spec.Image,
 									Command: []string{"/bin/sh", "-c"},
-									Args:    []string{"echo 'Starting DB Backup' && mysqldump  --lock-tables --all-databases > /var/lib/mysql/backup.sql && echo 'Completed DB Backup'"},
+									Args:    []string{"echo 'Starting DB Backup'  &&  mysqldump -P 3306 -h 'mariadb-backup-service.mariadb' --lock-tables --all-databases > /var/lib/mysql/backup/backup.sql && echo 'Completed DB Backup'"},
 									VolumeMounts: []corev1.VolumeMount{
 										{
 											Name:      pvStorageName,

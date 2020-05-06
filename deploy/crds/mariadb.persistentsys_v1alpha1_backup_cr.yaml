@@ -9,4 +9,4 @@ spec:
   # Schedule period for the CronJob.
   # This spec allow you setup the backup frequency
   # Default: "0 0 * * *" # daily at 00:00
-  schedule: "*/10 * * * *"
+  schedule: "0 0 * * *"

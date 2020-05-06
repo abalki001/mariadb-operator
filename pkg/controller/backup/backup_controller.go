@@ -149,6 +149,12 @@ func (r *ReconcileBackup) createResources(bkp *mariadbv1alpha1.Backup, request r
 		return err
 	}
 
+	// Get the Database Backup Service created by the Backup Controller
+	if err := r.getDatabaseBackupService(bkp, db); err != nil {
+		log.Error(err, "Failed to get a Database Backup service")
+		return err
+	}
+
 	// Check if the cronJob is created, if not create one
 	if err := r.createCronJob(bkp, db); err != nil {
 		log.Error(err, "Failed to create the CronJob")
