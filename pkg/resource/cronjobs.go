@@ -1,8 +1,6 @@
 package resource
 
 import (
-	"time"
-
 	"github.com/persistentsys/mariadb-operator/pkg/apis/mariadb/v1alpha1"
 	"github.com/persistentsys/mariadb-operator/pkg/utils"
 	batchv1 "k8s.io/api/batch/v1"
@@ -14,15 +12,16 @@ import (
 )
 
 const pvStorageName = "mariadb-bkp-pv-storage"
-const pvClaimName = "mariadb-pv-claim"
+const bkpPVClaimName = "mariadb-bkp-pv-claim"
 
 // NewBackupCronJob Returns the CronJob object for the Database Backup
 func NewBackupCronJob(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, scheme *runtime.Scheme) *v1beta1.CronJob {
 
 	hostname := mariadbBkpServiceName(bkp) + "." + bkp.Namespace
-	currentTime := time.Now()
-	formatedDate := currentTime.Format("2006-01-02_15:04:05")
-	filename := "/var/lib/mysql/backup/backup_" + formatedDate + ".sql"
+	// currentTime := time.Now()
+	//formatedDate := currentTime.Format("2006-01-02_15:04:05")
+	// filename := "/var/lib/mysql/backup/backup_" + formatedDate + ".sql"
+	filename := "/var/lib/mysql/backup_`date +%F_%T`.sql"
 	backupCommand := "echo 'Starting DB Backup'  &&  " +
 		"mysqldump -P 3306 -h '" + hostname +
 		"' --lock-tables --all-databases > " + filename +
@@ -46,7 +45,7 @@ func NewBackupCronJob(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, scheme *runtim
 									Name: pvStorageName,
 									VolumeSource: corev1.VolumeSource{
 										PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-											ClaimName: pvClaimName,
+											ClaimName: bkpPVClaimName,
 										},
 									},
 								},
