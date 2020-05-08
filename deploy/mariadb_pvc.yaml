@@ -10,16 +10,3 @@ spec:
     requests:
       storage: 1Gi
   volumeName: "mariadb-pv-volume"
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mariadb-bkp-pv-claim
-spec:
-  storageClassName: manual
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-  volumeName: "mariadb-bkp-pv-volume"

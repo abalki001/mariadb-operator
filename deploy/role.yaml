@@ -91,3 +91,20 @@ rules:
   - list
   - watch
   - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: mariadb-operator
+rules:
+- apiGroups: [""]
+  resources:
+  - nodes
+  - persistentvolumes
+  - namespaces
+  verbs: ["list", "watch"]
+- apiGroups: ["storage.k8s.io"]
+  resources:
+  - storageclasses
+  verbs: ["list", "watch"]

@@ -12,10 +12,12 @@ import (
 )
 
 const pvStorageName = "mariadb-bkp-pv-storage"
-const bkpPVClaimName = "mariadb-bkp-pv-claim"
+// const bkpPVClaimName = "mariadb-bkp-pv-claim"
 
 // NewBackupCronJob Returns the CronJob object for the Database Backup
 func NewBackupCronJob(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, scheme *runtime.Scheme) *v1beta1.CronJob {
+
+	bkpPVClaimName:= GetMariadbBkpVolumeClaimName(bkp)
 
 	hostname := mariadbBkpServiceName(bkp) + "." + bkp.Namespace
 	// currentTime := time.Now()

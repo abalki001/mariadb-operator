@@ -13,13 +13,13 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-var rf_log = logf.Log.WithName("resource_fetch")
+var rfLog = logf.Log.WithName("resource_fetch")
 
 // FetchDatabaseCR fetches CR of MariDB
 // Request object not found, could have been deleted after reconcile request.
 // Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
 func FetchDatabaseCR(name, namespace string, client client.Client) (*v1alpha1.MariaDB, error) {
-	rf_log.Info("Fetching Database CR ...")
+	rfLog.Info("Fetching Database CR ...")
 	db := &v1alpha1.MariaDB{}
 	err := client.Get(context.TODO(), types.NamespacedName{Name: name, Namespace: namespace}, db)
 	return db, err
@@ -27,7 +27,7 @@ func FetchDatabaseCR(name, namespace string, client client.Client) (*v1alpha1.Ma
 
 // FetchBackupCR fetches CR of Maria DB Backup object
 func FetchBackupCR(name, namespace string, client client.Client) (*v1alpha1.Backup, error) {
-	rf_log.Info("Fetching Backup CR ...")
+	rfLog.Info("Fetching Backup CR ...")
 	bkp := &v1alpha1.Backup{}
 	err := client.Get(context.TODO(), types.NamespacedName{Name: name, Namespace: namespace}, bkp)
 	return bkp, err
@@ -35,7 +35,7 @@ func FetchBackupCR(name, namespace string, client client.Client) (*v1alpha1.Back
 
 // FetchDatabasePod search in the cluster for 1 Pod managed by the Database Controller
 func FetchDatabasePod(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client client.Client) (*corev1.Pod, error) {
-	rf_log.Info("Fetching Database Pod ...")
+	rfLog.Info("Fetching Database Pod ...")
 	listOps := buildDatabaseCriteria(bkp, db)
 	dbPodList := &corev1.PodList{}
 	err := client.List(context.TODO(), dbPodList, listOps)
@@ -53,7 +53,7 @@ func FetchDatabasePod(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client client.
 
 //FetchDatabaseService search in the cluster for 1 Service managed by the Database Controller
 func FetchDatabaseService(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client client.Client) (*corev1.Service, error) {
-	rf_log.Info("Fetching Database Service ...")
+	rfLog.Info("Fetching Database Service ...")
 	listOps := buildDatabaseCriteria(bkp, db)
 	dbServiceList := &corev1.ServiceList{}
 	err := client.List(context.TODO(), dbServiceList, listOps)
@@ -71,7 +71,7 @@ func FetchDatabaseService(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client cli
 
 //FetchDatabaseBackupService search in the cluster for 1 Service managed by the Backup Controller
 func FetchDatabaseBackupService(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client client.Client) (*corev1.Service, error) {
-	rf_log.Info("Fetching Database Backup Service ...")
+	rfLog.Info("Fetching Database Backup Service ...")
 	listOps := buildDatabaseBackupCriteria(bkp, db)
 	bkpServiceList := &corev1.ServiceList{}
 	err := client.List(context.TODO(), bkpServiceList, listOps)
@@ -89,10 +89,30 @@ func FetchDatabaseBackupService(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, clie
 
 //FetchCronJob returns the CronJob resource with the name in the namespace
 func FetchCronJob(name, namespace string, client client.Client) (*v1beta1.CronJob, error) {
-	rf_log.Info("Fetching CronJob ...")
+	rfLog.Info("Fetching CronJob ...")
 	cronJob := &v1beta1.CronJob{}
 	err := client.Get(context.TODO(), types.NamespacedName{Name: name, Namespace: namespace}, cronJob)
 	return cronJob, err
+}
+
+//FetchDatabaseBkpPV search in the cluster for PV managed by the Backup Controller
+func FetchDatabaseBkpPV(name, namespace string, client client.Client) (*corev1.PersistentVolume, error) {
+	rfLog.Info("Fetching Persistent Volume for Database Backup ...")
+
+	pv := &corev1.PersistentVolume{}
+	err := client.Get(context.TODO(), types.NamespacedName{Name: name, Namespace: namespace}, pv)
+
+	return pv, err
+}
+
+//FetchDatabaseBkpPVC search in the cluster for PVC managed by the Backup Controller
+func FetchDatabaseBkpPVC(name, namespace string, client client.Client) (*corev1.PersistentVolumeClaim, error) {
+	rfLog.Info("Fetching Persistent Volume Claim for Database Backup ...")
+
+	pvc := &corev1.PersistentVolumeClaim{}
+	err := client.Get(context.TODO(), types.NamespacedName{Name: name, Namespace: namespace}, pvc)
+
+	return pvc, err
 }
 
 //buildDatabaseCreteria returns client.ListOptions required to fetch the secondary resource created by
