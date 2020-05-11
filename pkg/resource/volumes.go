@@ -12,16 +12,16 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-var volLog = logf.Log.WithName("controller_backup")
+var volLog = logf.Log.WithName("resource_volumes")
 
 // GetMariadbBkpVolumeName - return name of PV used in DB Backup
 func GetMariadbBkpVolumeName(bkp *v1alpha1.Backup) string {
-	return bkp.Name + "-pv-volume-test"
+	return bkp.Name + "-pv-volume"
 }
 
 // GetMariadbBkpVolumeClaimName - return name of PVC used in DB Backup
 func GetMariadbBkpVolumeClaimName(bkp *v1alpha1.Backup) string {
-	return bkp.Name + "-pv-claim-test"
+	return bkp.Name + "-pv-claim"
 }
 
 // NewDbBackupPV Create a new PV object for Database Backup
@@ -30,24 +30,24 @@ func NewDbBackupPV(bkp *v1alpha1.Backup, v *v1alpha1.MariaDB, scheme *runtime.Sc
 	labels := utils.MariaDBBkpLabels(bkp, "mariadb-backup")
 	pv := &corev1.PersistentVolume{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      GetMariadbBkpVolumeName(bkp),
+			Name: GetMariadbBkpVolumeName(bkp),
 			// Namespace: v.Namespace,
-			Labels:    labels,
+			Labels: labels,
 		},
 		Spec: corev1.PersistentVolumeSpec{
 			StorageClassName: "manual",
 			Capacity: corev1.ResourceList{
-				corev1.ResourceName(corev1.ResourceStorage): resource.MustParse("1Gi"),
+				corev1.ResourceName(corev1.ResourceStorage): resource.MustParse(bkp.Spec.BackupSize),
 			},
 			AccessModes: []v1.PersistentVolumeAccessMode{v1.ReadWriteOnce},
 			PersistentVolumeSource: corev1.PersistentVolumeSource{
 				HostPath: &corev1.HostPathVolumeSource{
-					Path: "/mnt/backup"},
+					Path: bkp.Spec.BackupPath},
 			},
 		},
 	}
 
-	volLog.Info("PV created for Database Backup ", GetMariadbBkpVolumeName(bkp))
+	volLog.Info("PV created for Database Backup ")
 	controllerutil.SetControllerReference(bkp, pv, scheme)
 	return pv
 }
@@ -68,14 +68,14 @@ func NewDbBackupPVC(bkp *v1alpha1.Backup, v *v1alpha1.MariaDB, scheme *runtime.S
 			AccessModes:      []v1.PersistentVolumeAccessMode{v1.ReadWriteOnce},
 			Resources: corev1.ResourceRequirements{
 				Requests: corev1.ResourceList{
-					corev1.ResourceName(corev1.ResourceStorage): resource.MustParse("1Gi"),
+					corev1.ResourceName(corev1.ResourceStorage): resource.MustParse(bkp.Spec.BackupSize),
 				},
 			},
 			VolumeName: GetMariadbBkpVolumeName(bkp),
 		},
 	}
 
-	volLog.Info("PVC created for Database Backup ", GetMariadbBkpVolumeClaimName(bkp))
+	volLog.Info("PVC created for Database Backup ")
 	controllerutil.SetControllerReference(bkp, pvc, scheme)
 	return pvc
 }

@@ -34,12 +34,16 @@ spec:
             backupPath:
               description: Backup Path
               type: string
+            backupSize:
+              description: Backup Size (Ex. 1Gi, 100Mi)
+              type: string
             schedule:
               description: 'Schedule period for the CronJob. This spec allow you setup
                 the backup frequency Default: "0 0 * * *" # daily at 00:00'
               type: string
           required:
           - backupPath
+          - backupSize
           type: object
         status:
           description: BackupStatus defines the observed state of Backup

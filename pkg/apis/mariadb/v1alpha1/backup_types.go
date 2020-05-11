@@ -19,8 +19,10 @@ type BackupSpec struct {
 	Schedule string `json:"schedule,omitempty"`
 
 	// Backup Path
-	BackupPath string `json:"backupPath"`	
+	BackupPath string `json:"backupPath"`
 
+	// Backup Size (Ex. 1Gi, 100Mi)
+	BackupSize string `json:"backupSize"`
 }
 
 // BackupStatus defines the observed state of Backup

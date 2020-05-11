@@ -96,11 +96,11 @@ func FetchCronJob(name, namespace string, client client.Client) (*v1beta1.CronJo
 }
 
 //FetchDatabaseBkpPV search in the cluster for PV managed by the Backup Controller
-func FetchDatabaseBkpPV(name, namespace string, client client.Client) (*corev1.PersistentVolume, error) {
+func FetchDatabaseBkpPV(name string, client client.Client) (*corev1.PersistentVolume, error) {
 	rfLog.Info("Fetching Persistent Volume for Database Backup ...")
 
 	pv := &corev1.PersistentVolume{}
-	err := client.Get(context.TODO(), types.NamespacedName{Name: name, Namespace: namespace}, pv)
+	err := client.Get(context.TODO(), types.NamespacedName{Name: name}, pv)
 
 	return pv, err
 }
