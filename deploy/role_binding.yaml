@@ -13,11 +13,11 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: mariadb-operator
+  name: mariadb-operator-cl-binding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: mariadb-operator
+  name: mariadb-operator-cl-role
 subjects:
   - kind: ServiceAccount
     name: mariadb-operator

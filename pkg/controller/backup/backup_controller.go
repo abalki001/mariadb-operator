@@ -81,7 +81,7 @@ type ReconcileBackup struct {
 	scheme    *runtime.Scheme
 	dbPod     *corev1.Pod
 	dbService *corev1.Service
-	bkpPV *corev1.PersistentVolume
+	bkpPV     *corev1.PersistentVolume
 }
 
 // Reconcile reads that state of the cluster for a Backup object and makes changes based on the state read
@@ -156,9 +156,15 @@ func (r *ReconcileBackup) createResources(bkp *mariadbv1alpha1.Backup, request r
 		return err
 	}
 
-	// Check if the cronJob is created, if not create one
+	// Check if the PV is created, if not create one
 	if err := r.createBackupPV(bkp, db); err != nil {
 		log.Error(err, "Failed to create the Persistent Volume for MariaDB Backup")
+		return err
+	}
+
+	// Check if the PVC is created, if not create one
+	if err := r.createBackupPVC(bkp, db); err != nil {
+		log.Error(err, "Failed to create the Persistent Volume Claim for MariaDB Backup")
 		return err
 	}
 
