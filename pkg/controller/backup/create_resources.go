@@ -60,10 +60,10 @@ func (r *ReconcileBackup) createCronJob(bkp *v1alpha1.Backup, db *v1alpha1.Maria
 // getMariaBkpPV - Check if the PV is created, if not create one
 func (r *ReconcileBackup) createBackupPV(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB) error {
 	pvName := resource.GetMariadbBkpVolumeName(bkp)
-	pv, err := service.FetchDatabaseBkpPV(pvName, r.client)
+	pv, err := service.FetchPVByName(pvName, r.client)
 	if err != nil || pv == nil {
 		pv := resource.NewDbBackupPV(bkp, db, r.scheme)
-		if err := r.client.Create(context.TODO(), pv ); err != nil {
+		if err := r.client.Create(context.TODO(), pv); err != nil {
 			return err
 		}
 	}
@@ -74,7 +74,7 @@ func (r *ReconcileBackup) createBackupPV(bkp *v1alpha1.Backup, db *v1alpha1.Mari
 // createBackupPVC - Check if the PVC is created, if not create one
 func (r *ReconcileBackup) createBackupPVC(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB) error {
 	pvcName := resource.GetMariadbBkpVolumeClaimName(bkp)
-	pvc, err := service.FetchDatabaseBkpPVC(pvcName, bkp.Namespace, r.client)
+	pvc, err := service.FetchPVCByNameAndNS(pvcName, bkp.Namespace, r.client)
 	if err != nil || pvc == nil {
 		pvc := resource.NewDbBackupPVC(bkp, db, r.scheme)
 		if err := r.client.Create(context.TODO(), pvc); err != nil {

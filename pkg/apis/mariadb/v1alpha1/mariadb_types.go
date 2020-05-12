@@ -18,7 +18,7 @@ type MariaDBSpec struct {
 
 	// Database additional user details (base64 encoded)
 	Username string `json:"username"`
-	
+
 	// Database additional user password (base64 encoded)
 	Password string `json:"password"`
 
@@ -31,6 +31,11 @@ type MariaDBSpec struct {
 	// Image name with version
 	Image string `json:"image"`
 
+	// Database storage Path
+	DataStoragePath string `json:"dataStoragePath"`
+
+	// Database storage Size (Ex. 1Gi, 100Mi)
+	DataStorageSize string `json:"dataStorageSize"`
 }
 
 // MariaDBStatus defines the observed state of MariaDB

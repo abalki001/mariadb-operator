@@ -129,6 +129,16 @@ func (r *ReconcileMariaDB) Reconcile(request reconcile.Request) (reconcile.Resul
 		return *result, err
 	}
 
+	result, err = r.ensurePV(request, instance)
+	if result != nil {
+		return *result, err
+	}
+
+	result, err = r.ensurePVC(request, instance)
+	if result != nil {
+		return *result, err
+	}
+
 	err = r.updateMariadbStatus(instance)
 	if err != nil {
 		// Requeue the request if the status could not be updated

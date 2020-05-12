@@ -18,7 +18,9 @@ spec:
   # Image name with version
   image: "mariadb/server:10.3"
 
+  # Database storage Path
+  dataStoragePath: "/mnt/data" 
 
-
-
+  # Database storage Size (Ex. 1Gi, 100Mi)
+  dataStorageSize: "1Gi"
 

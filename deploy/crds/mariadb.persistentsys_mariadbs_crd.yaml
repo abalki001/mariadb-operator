@@ -31,6 +31,12 @@ spec:
         spec:
           description: MariaDBSpec defines the desired state of MariaDB
           properties:
+            dataStoragePath:
+              description: Database storage Path
+              type: string
+            dataStorageSize:
+              description: Database storage Size (Ex. 1Gi, 100Mi)
+              type: string
             database:
               description: New Database name
               type: string
@@ -51,6 +57,8 @@ spec:
               description: Database additional user details (base64 encoded)
               type: string
           required:
+          - dataStoragePath
+          - dataStorageSize
           - database
           - image
           - password

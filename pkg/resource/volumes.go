@@ -14,6 +14,16 @@ import (
 
 var volLog = logf.Log.WithName("resource_volumes")
 
+// GetMariadbVolumeName - return name of PV used in MariaDB
+func GetMariadbVolumeName(v *v1alpha1.MariaDB) string {
+	return v.Name + "-pv-volume"
+}
+
+// GetMariadbVolumeClaimName - return name of PVC used in MariaDB
+func GetMariadbVolumeClaimName(v *v1alpha1.MariaDB) string {
+	return v.Name + "-pv-claim"
+}
+
 // GetMariadbBkpVolumeName - return name of PV used in DB Backup
 func GetMariadbBkpVolumeName(bkp *v1alpha1.Backup) string {
 	return bkp.Name + "-pv-volume"
@@ -39,7 +49,7 @@ func NewDbBackupPV(bkp *v1alpha1.Backup, v *v1alpha1.MariaDB, scheme *runtime.Sc
 			Capacity: corev1.ResourceList{
 				corev1.ResourceName(corev1.ResourceStorage): resource.MustParse(bkp.Spec.BackupSize),
 			},
-			AccessModes: []v1.PersistentVolumeAccessMode{v1.ReadWriteOnce},
+			AccessModes: []v1.PersistentVolumeAccessMode{v1.ReadWriteMany},
 			PersistentVolumeSource: corev1.PersistentVolumeSource{
 				HostPath: &corev1.HostPathVolumeSource{
 					Path: bkp.Spec.BackupPath},
@@ -65,7 +75,7 @@ func NewDbBackupPVC(bkp *v1alpha1.Backup, v *v1alpha1.MariaDB, scheme *runtime.S
 		},
 		Spec: corev1.PersistentVolumeClaimSpec{
 			StorageClassName: &storageClassName,
-			AccessModes:      []v1.PersistentVolumeAccessMode{v1.ReadWriteOnce},
+			AccessModes:      []v1.PersistentVolumeAccessMode{v1.ReadWriteMany},
 			Resources: corev1.ResourceRequirements{
 				Requests: corev1.ResourceList{
 					corev1.ResourceName(corev1.ResourceStorage): resource.MustParse(bkp.Spec.BackupSize),
@@ -77,5 +87,61 @@ func NewDbBackupPVC(bkp *v1alpha1.Backup, v *v1alpha1.MariaDB, scheme *runtime.S
 
 	volLog.Info("PVC created for Database Backup ")
 	controllerutil.SetControllerReference(bkp, pvc, scheme)
+	return pvc
+}
+
+// NewMariaDbPV Create a new PV object for MariaDB
+func NewMariaDbPV(v *v1alpha1.MariaDB, scheme *runtime.Scheme) *corev1.PersistentVolume {
+	volLog.Info("Creating new PV for MariaDB")
+	labels := utils.Labels(v, "mariadb")
+	pv := &corev1.PersistentVolume{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: GetMariadbVolumeName(v),
+			// Namespace: v.Namespace,
+			Labels: labels,
+		},
+		Spec: corev1.PersistentVolumeSpec{
+			StorageClassName: "manual",
+			Capacity: corev1.ResourceList{
+				corev1.ResourceName(corev1.ResourceStorage): resource.MustParse(v.Spec.DataStorageSize),
+			},
+			AccessModes: []v1.PersistentVolumeAccessMode{v1.ReadWriteMany},
+			PersistentVolumeSource: corev1.PersistentVolumeSource{
+				HostPath: &corev1.HostPathVolumeSource{
+					Path: v.Spec.DataStoragePath},
+			},
+		},
+	}
+
+	volLog.Info("PV created for MariaDB ")
+	controllerutil.SetControllerReference(v, pv, scheme)
+	return pv
+}
+
+// NewMariaDbPVC Create a new PV Claim object for MariaDB
+func NewMariaDbPVC(v *v1alpha1.MariaDB, scheme *runtime.Scheme) *corev1.PersistentVolumeClaim {
+	volLog.Info("Creating new PVC for MariaDB")
+	labels := utils.Labels(v, "mariadb")
+	storageClassName := "manual"
+	pvc := &corev1.PersistentVolumeClaim{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      GetMariadbVolumeClaimName(v),
+			Namespace: v.Namespace,
+			Labels:    labels,
+		},
+		Spec: corev1.PersistentVolumeClaimSpec{
+			StorageClassName: &storageClassName,
+			AccessModes:      []v1.PersistentVolumeAccessMode{v1.ReadWriteMany},
+			Resources: corev1.ResourceRequirements{
+				Requests: corev1.ResourceList{
+					corev1.ResourceName(corev1.ResourceStorage): resource.MustParse(v.Spec.DataStorageSize),
+				},
+			},
+			VolumeName: GetMariadbVolumeName(v),
+		},
+	}
+
+	volLog.Info("PVC created for MariaDB ")
+	controllerutil.SetControllerReference(v, pvc, scheme)
 	return pvc
 }

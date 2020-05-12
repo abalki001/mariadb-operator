@@ -51,7 +51,7 @@ func FetchDatabasePod(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client client.
 	return &pod, nil
 }
 
-//FetchDatabaseService search in the cluster for 1 Service managed by the Database Controller
+// FetchDatabaseService search in the cluster for 1 Service managed by the Database Controller
 func FetchDatabaseService(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client client.Client) (*corev1.Service, error) {
 	rfLog.Info("Fetching Database Service ...")
 	listOps := buildDatabaseCriteria(bkp, db)
@@ -69,7 +69,7 @@ func FetchDatabaseService(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client cli
 	return &srv, nil
 }
 
-//FetchDatabaseBackupService search in the cluster for 1 Service managed by the Backup Controller
+// FetchDatabaseBackupService search in the cluster for 1 Service managed by the Backup Controller
 func FetchDatabaseBackupService(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, client client.Client) (*corev1.Service, error) {
 	rfLog.Info("Fetching Database Backup Service ...")
 	listOps := buildDatabaseBackupCriteria(bkp, db)
@@ -87,7 +87,7 @@ func FetchDatabaseBackupService(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, clie
 	return &srv, nil
 }
 
-//FetchCronJob returns the CronJob resource with the name in the namespace
+// FetchCronJob returns the CronJob resource with the name in the namespace
 func FetchCronJob(name, namespace string, client client.Client) (*v1beta1.CronJob, error) {
 	rfLog.Info("Fetching CronJob ...")
 	cronJob := &v1beta1.CronJob{}
@@ -95,34 +95,34 @@ func FetchCronJob(name, namespace string, client client.Client) (*v1beta1.CronJo
 	return cronJob, err
 }
 
-//FetchDatabaseBkpPV search in the cluster for PV managed by the Backup Controller
-func FetchDatabaseBkpPV(name string, client client.Client) (*corev1.PersistentVolume, error) {
-	rfLog.Info("Fetching Persistent Volume for Database Backup ...")
+// FetchPVByName search in the cluster for PV managed by the Backup Controller
+func FetchPVByName(name string, client client.Client) (*corev1.PersistentVolume, error) {
+	reqLogger := rfLog.WithValues("PV Name", name)
+	reqLogger.Info("Fetching Persistent Volume")
 
 	pv := &corev1.PersistentVolume{}
 	err := client.Get(context.TODO(), types.NamespacedName{Name: name}, pv)
-
 	return pv, err
 }
 
-//FetchDatabaseBkpPVC search in the cluster for PVC managed by the Backup Controller
-func FetchDatabaseBkpPVC(name, namespace string, client client.Client) (*corev1.PersistentVolumeClaim, error) {
-	rfLog.Info("Fetching Persistent Volume Claim for Database Backup ...")
+// FetchPVCByNameAndNS search in the cluster for PVC managed by the Backup Controller
+func FetchPVCByNameAndNS(name, namespace string, client client.Client) (*corev1.PersistentVolumeClaim, error) {
+	reqLogger := rfLog.WithValues("PVC Name", name, "PVC Namespace", namespace)
+	reqLogger.Info("Fetching Persistent Volume Claim")
 
 	pvc := &corev1.PersistentVolumeClaim{}
 	err := client.Get(context.TODO(), types.NamespacedName{Name: name, Namespace: namespace}, pvc)
-
 	return pvc, err
 }
 
-//buildDatabaseCreteria returns client.ListOptions required to fetch the secondary resource created by
+// buildDatabaseCreteria returns client.ListOptions required to fetch the secondary resource created by
 func buildDatabaseCriteria(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB) *client.ListOptions {
 	labelSelector := labels.SelectorFromSet(utils.Labels(db, "mariadb"))
 	listOps := &client.ListOptions{Namespace: db.Namespace, LabelSelector: labelSelector}
 	return listOps
 }
 
-//buildDatabaseCreteria returns client.ListOptions required to fetch the secondary resource created by
+// buildDatabaseCreteria returns client.ListOptions required to fetch the secondary resource created by
 func buildDatabaseBackupCriteria(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB) *client.ListOptions {
 	labelSelector := labels.SelectorFromSet(utils.Labels(db, "mariadb-backup"))
 	listOps := &client.ListOptions{Namespace: bkp.Namespace, LabelSelector: labelSelector}
