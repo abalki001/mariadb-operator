@@ -4,6 +4,7 @@ import (
 	"context"
 
 	mariadbv1alpha1 "github.com/persistentsys/mariadb-operator/pkg/apis/mariadb/v1alpha1"
+	"github.com/persistentsys/mariadb-operator/pkg/utils"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -29,7 +30,7 @@ func mysqlAuthName() string {
 }
 
 func (r *ReconcileMariaDB) mariadbDeployment(v *mariadbv1alpha1.MariaDB) *appsv1.Deployment {
-	labels := labels(v, "mariadb")
+	labels := utils.Labels(v, "mariadb")
 	size := v.Spec.Size
 	image := v.Spec.Image
 
@@ -118,7 +119,7 @@ func (r *ReconcileMariaDB) mariadbDeployment(v *mariadbv1alpha1.MariaDB) *appsv1
 }
 
 func (r *ReconcileMariaDB) mariadbService(v *mariadbv1alpha1.MariaDB) *corev1.Service {
-	labels := labels(v, "mariadb")
+	labels := utils.Labels(v, "mariadb")
 
 	s := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{

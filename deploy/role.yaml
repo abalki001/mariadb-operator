@@ -70,6 +70,7 @@ rules:
   - mariadb.persistentsys
   resources:
   - '*'
+  - backups
   verbs:
   - create
   - delete
@@ -78,3 +79,42 @@ rules:
   - patch
   - update
   - watch
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs
+  - jobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - watch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: mariadb-operator-cl-role
+rules:
+- apiGroups: [""]
+  resources:
+  - nodes
+  - persistentvolumes
+  - namespaces
+  verbs: 
+  - list
+  - watch
+  - get
+  - create
+  - delete 
+- apiGroups: ["storage.k8s.io"]
+  resources:
+  - storageclasses
+  verbs: 
+  - list
+  - watch
+  - get
+  - create
+  - delete

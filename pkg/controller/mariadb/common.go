@@ -4,6 +4,8 @@ import (
 	"context"
 
 	mariadbv1alpha1 "github.com/persistentsys/mariadb-operator/pkg/apis/mariadb/v1alpha1"
+	"github.com/persistentsys/mariadb-operator/pkg/resource"
+	"github.com/persistentsys/mariadb-operator/pkg/service"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -110,14 +112,6 @@ func (r *ReconcileMariaDB) ensureService(request reconcile.Request,
 	return nil, nil
 }
 
-func labels(v *mariadbv1alpha1.MariaDB, tier string) map[string]string {
-	return map[string]string{
-		"app":        "MariaDB",
-		"MariaDB_cr": v.Name,
-		"tier":       tier,
-	}
-}
-
 func (r *ReconcileMariaDB) ensureSecret(request reconcile.Request,
 	instance *mariadbv1alpha1.MariaDB,
 	s *corev1.Secret,
@@ -146,5 +140,63 @@ func (r *ReconcileMariaDB) ensureSecret(request reconcile.Request,
 		return &reconcile.Result{}, err
 	}
 
+	return nil, nil
+}
+
+// ensurePV - Ensure that PV is present. If not, create one
+func (r *ReconcileMariaDB) ensurePV(request reconcile.Request,
+	instance *mariadbv1alpha1.MariaDB,
+) (*reconcile.Result, error) {
+	pvName := resource.GetMariadbVolumeName(instance)
+	_, err := service.FetchPVByName(pvName, r.client)
+
+	if err != nil && errors.IsNotFound(err) {
+		// Create Persistent Volume
+		log.Info("Creating a new PV", "PV.Name", pvName)
+
+		pv := resource.NewMariaDbPV(instance, r.scheme)
+		err := r.client.Create(context.TODO(), pv)
+		if err != nil {
+			// Creation failed
+			log.Error(err, "Failed to create new PV", "PV.Name", pvName)
+			return &reconcile.Result{}, err
+		} else {
+			// Creation was successful
+			return nil, nil
+		}
+	} else if err != nil {
+		// Error that isn't due to the service not existing
+		log.Error(err, "Failed to get PV")
+		return &reconcile.Result{}, err
+	}
+	return nil, nil
+}
+
+// ensurePVC - Ensure that PVC is present. If not, create one
+func (r *ReconcileMariaDB) ensurePVC(request reconcile.Request,
+	instance *mariadbv1alpha1.MariaDB,
+) (*reconcile.Result, error) {
+	pvcName := resource.GetMariadbVolumeClaimName(instance)
+	_, err := service.FetchPVCByNameAndNS(pvcName, instance.Namespace, r.client)
+
+	if err != nil && errors.IsNotFound(err) {
+		// Create Persistent Volume Claim
+		log.Info("Creating a new PVC", "PVC.Name", pvcName)
+
+		pvc := resource.NewMariaDbPVC(instance, r.scheme)
+		err := r.client.Create(context.TODO(), pvc)
+		if err != nil {
+			// Creation failed
+			log.Error(err, "Failed to create new PVC", "PV.Name", pvcName, "PVC.Namespace", instance.Namespace)
+			return &reconcile.Result{}, err
+		} else {
+			// Creation was successful
+			return nil, nil
+		}
+	} else if err != nil {
+		// Error that isn't due to the service not existing
+		log.Error(err, "Failed to get PVC")
+		return &reconcile.Result{}, err
+	}
 	return nil, nil
 }
