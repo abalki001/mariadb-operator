@@ -30,8 +30,8 @@ uninstall: ## Uninstall all that all performed in the $ make install
 	- kubectl delete -f deploy/crds/mariadb.persistentsys_v1alpha1_backup_cr.yaml -n ${NAMESPACE}
 	- kubectl delete -f deploy/crds/mariadb.persistentsys_v1alpha1_mariadb_cr.yaml -n ${NAMESPACE}
 	@echo ....... Deleting PV and PVC.......
-##	- kubectl delete -f deploy/mariadb_pvc.yaml -n ${NAMESPACE}
-##	- kubectl delete -f deploy/mariadb_pv.yaml -n ${NAMESPACE}
+	- kubectl delete pv mariadb-backup-pv-volume
+	- kubectl delete pv mariadb-pv-volume
 	@echo ....... Deleting CRDs.......
 	- kubectl delete -f deploy/crds/mariadb.persistentsys_backups_crd.yaml -n ${NAMESPACE}
 	- kubectl delete -f deploy/crds/mariadb.persistentsys_mariadbs_crd.yaml -n ${NAMESPACE}
