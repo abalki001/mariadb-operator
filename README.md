@@ -7,7 +7,6 @@
 * Seamless upgrades of MariaDB is possible without loosing data.
 * Take database backup at defined intervals
 
-
 ## CRs
 
 ### MariaDB
