@@ -46,6 +46,10 @@ spec:
             password:
               description: Database additional user password (base64 encoded)
               type: string
+            port:
+              description: Port number exposed for Database service
+              format: int32
+              type: integer
             rootpwd:
               description: Root user password
               type: string
@@ -62,6 +66,7 @@ spec:
           - database
           - image
           - password
+          - port
           - rootpwd
           - size
           - username
