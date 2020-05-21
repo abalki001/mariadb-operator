@@ -38,6 +38,10 @@ spec:
 
   # Database storage Size (Ex. 1Gi, 100Mi)
   dataStorageSize: "1Gi"
+
+  # Port number exposed for Database service
+  port: 30685
+
 ```
 This CR with create a database called `test-db`, along with user credentials.
 The Server image name is mentioned in "image" parameter.
