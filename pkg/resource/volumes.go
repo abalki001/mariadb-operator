@@ -16,7 +16,7 @@ var volLog = logf.Log.WithName("resource_volumes")
 
 // GetMariadbVolumeName - return name of PV used in MariaDB
 func GetMariadbVolumeName(v *v1alpha1.MariaDB) string {
-	return v.Name + "-pv-volume"
+	return v.Name + "-" + v.Namespace + "-pv"
 }
 
 // GetMariadbVolumeClaimName - return name of PVC used in MariaDB
@@ -26,7 +26,7 @@ func GetMariadbVolumeClaimName(v *v1alpha1.MariaDB) string {
 
 // GetMariadbBkpVolumeName - return name of PV used in DB Backup
 func GetMariadbBkpVolumeName(bkp *v1alpha1.Backup) string {
-	return bkp.Name + "-pv-volume"
+	return bkp.Name + "-" + bkp.Namespace + "-pv"
 }
 
 // GetMariadbBkpVolumeClaimName - return name of PVC used in DB Backup
