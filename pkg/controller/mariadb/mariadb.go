@@ -133,7 +133,7 @@ func (r *ReconcileMariaDB) mariadbService(v *mariadbv1alpha1.MariaDB) *corev1.Se
 				Protocol:   corev1.ProtocolTCP,
 				Port:       mariadbPort,
 				TargetPort: intstr.FromInt(3306),
-				NodePort:   30685,
+				NodePort:   v.Spec.Port,
 			}},
 			Type: corev1.ServiceTypeNodePort,
 		},

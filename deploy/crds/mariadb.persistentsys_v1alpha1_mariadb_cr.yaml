@@ -24,3 +24,7 @@ spec:
   # Database storage Size (Ex. 1Gi, 100Mi)
   dataStorageSize: "1Gi"
 
+  # Port number exposed for Database service 
+  port: 30685
+
+

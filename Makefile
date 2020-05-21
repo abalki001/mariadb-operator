@@ -14,6 +14,7 @@ install: ## Install all resources (CR/CRD's, RBAC and Operator)
 	@echo ....... Applying Rules and Service Account .......
 	- kubectl apply -f deploy/service_account.yaml  -n ${NAMESPACE}
 	- kubectl apply -f deploy/role.yaml -n ${NAMESPACE}
+	- sed -i 's/.*namespace:.*/    namespace: ${NAMESPACE}/' deploy/role_binding.yaml
 	- kubectl apply -f deploy/role_binding.yaml  -n ${NAMESPACE}
 	@echo ....... Applying Operator .......
 	- kubectl apply -f deploy/operator.yaml -n ${NAMESPACE}
@@ -32,8 +33,10 @@ uninstall: ## Uninstall all that all performed in the $ make install
 	@echo ....... Deleting Operator ......
 	- kubectl delete -f deploy/operator.yaml -n ${NAMESPACE}
 	@echo ....... Deleting PV and PVC.......
-	- kubectl delete pv mariadb-backup-pv-volume
-	- kubectl delete pv mariadb-pv-volume
+
+	- kubectl delete pv mariadb-backup-${NAMESPACE}-pv
+	- kubectl delete pv mariadb-${NAMESPACE}-pv
+
 	@echo ....... Deleting CRDs.......
 	- kubectl delete -f deploy/crds/mariadb.persistentsys_backups_crd.yaml -n ${NAMESPACE}
 	- kubectl delete -f deploy/crds/mariadb.persistentsys_mariadbs_crd.yaml -n ${NAMESPACE}

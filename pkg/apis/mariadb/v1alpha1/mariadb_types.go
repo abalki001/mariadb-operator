@@ -36,6 +36,9 @@ type MariaDBSpec struct {
 
 	// Database storage Size (Ex. 1Gi, 100Mi)
 	DataStorageSize string `json:"dataStorageSize"`
+
+	// Port number exposed for Database service
+	Port int32 `json:"port"`
 }
 
 // MariaDBStatus defines the observed state of MariaDB
