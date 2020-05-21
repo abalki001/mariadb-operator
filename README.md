@@ -6,6 +6,7 @@
 * Operator uses Persistent Volume where MariaDB can write its data files.
 * Seamless upgrades of MariaDB is possible without loosing data.
 * Take database backup at defined intervals
+* Provides mariadb metrics with prometheus/mysqld_exporter
 
 
 ## CRs
@@ -61,8 +62,30 @@ spec:
   schedule: "0 0 * * *"
 
 ```
+
 This CR will schedule backup of MariaDB at defined schedule.
 The Database backup files will be stored at location: '/mnt/backup'. This location should be created before applying the CR. 
+
+
+### MariaDB Monitor CR
+```yaml
+apiVersion: mariadb.persistentsys/v1alpha1
+kind: Monitor
+metadata:
+  name: example-monitor
+spec:
+  # Add fields here
+  size: 1
+  # Database source to connect with for colleting metrics
+  # Format: "<db-user>:<db-password>@(<dbhost>:<dbport>)/<dbname>">
+  # Make approprite changes 
+  dataSourceName: "root:password@(192.168.99.127:30685)/test-db"
+  # Image name with version
+  # Refer https://registry.hub.docker.com/r/prom/mysqld-exporter for more details
+  image: "prom/mysqld-exporter"
+
+```
+This CR will start prometheus/mysqld_exporter pod and service. 
 
 
 ## Setup Instructions
@@ -78,6 +101,34 @@ Run the following make command to start all resources:
 # make install
 ```
 By default, all resources will be created in a namespace called "mariadb"
+
+### Create monitoring resources
+You need to have external prometheus and grafana servers deployed.
+
+#### Deploy prometheus operator
+Install prometheus operator from operatorhub or any other mechanism.
+
+OperatorHub link:
+https://operatorhub.io/operator/prometheus
+
+Note: If you are installing from operatorhub, then by default it installs the operator in operators namespace. 
+
+Below steps assumes that its deployed in operators namespace. However you may do the changes.
+
+#### Deploy prometheus and servicemonitor kinds
+Install prometheus server and servicemonitor. 
+Sample files are checked in to below location.
+
+examples/monitoring/Prometheus.yaml
+
+examples/monitoring/ServiceMonitor.yaml
+
+### Verify monitoring deployment
+You can do forwarding to open prometheus UI locally. 
+
+#kubectl --namespace operators  port-forward svc/prometheus-operated 9090
+
+Verify metrics are present at http://localhost:9090
 
 ### Verify Deployment
 Verify list of pods. One Operator and One Server pod should be created.

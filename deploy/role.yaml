@@ -118,3 +118,12 @@ rules:
   - get
   - create
   - delete
+- apiGroups:
+  - monitoring.coreos.com
+  resources:
+  - alertmanagers
+  - prometheuses
+  - prometheuses/finalizers
+  - servicemonitors
+  verbs:
+  - "*"
