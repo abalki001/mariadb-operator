@@ -106,35 +106,7 @@ Run the following make command to start all resources:
 ```
 By default, all resources will be created in a namespace called "mariadb"
 
-### Create monitoring resources
-You need to have external prometheus and grafana servers deployed.
-
-#### Deploy prometheus operator
-Install prometheus operator from operatorhub or any other mechanism.
-
-OperatorHub link:
-https://operatorhub.io/operator/prometheus
-
-Note: If you are installing from operatorhub, then by default it installs the operator in operators namespace. 
-
-Below steps assumes that its deployed in operators namespace. However you may do the changes.
-
-#### Deploy prometheus and servicemonitor kinds
-Install prometheus server and servicemonitor. 
-Sample files are checked in to below location.
-
-examples/monitoring/Prometheus.yaml
-
-examples/monitoring/ServiceMonitor.yaml
-
-### Verify monitoring deployment
-You can do forwarding to open prometheus UI locally. 
-
-#kubectl --namespace operators  port-forward svc/prometheus-operated 9090
-
-Verify metrics are present at http://localhost:9090
-
-### Verify Deployment
+### Verify MariaDB Deployment
 Verify list of pods. One Operator and One Server pod should be created.
 ```
 # kubectl get pods -n mariadb
@@ -188,6 +160,67 @@ mariadb-backup   0 0 * * *   False     0        <none>          17m
 ```
 At scheduled interval, a new Job will start to take database backup and create a backup file at defined location (default: /mnt/backup)
 
+
+### Create monitoring resources
+You need to have external prometheus and grafana servers deployed.
+
+#### Deploy prometheus operator
+Install prometheus operator from operatorhub or any other mechanism.
+
+OperatorHub link:
+https://operatorhub.io/operator/prometheus
+
+Note: If you are installing from operatorhub, then by default it installs the operator in operators namespace. 
+
+Below steps assumes that its deployed in operators namespace. However you may do the changes.
+
+#### Deploy prometheus and servicemonitor kinds
+Install prometheus server and servicemonitor. 
+Sample files are checked in to below location.
+
+examples/monitoring/Prometheus.yaml
+
+examples/monitoring/ServiceMonitor.yaml
+
+### Verify prometheus monitoring deployment
+You can do forwarding to open prometheus UI locally. 
+
+#kubectl --namespace operators  port-forward svc/prometheus-operated 9090
+
+Verify metrics are present at http://localhost:9090
+
+#### Deploy grafana operator
+Install grafana operator from operatorhub or any other mechanism.
+
+OperatorHub link:
+https://operatorhub.io/operator/grafana-operator
+
+Note: If you are installing from operatorhub, then by default it installs the operator in my-grafana-operator namespace. 
+
+Below steps assumes that its deployed in my-grafana-operator namespace. However you may do the changes.
+
+#### Deploy grafana, datasource and dashboard 
+Install grafana server.
+You can use below sample CRD 
+
+examples/monitoring/grafana-server.yaml
+
+Install grafana datasource.
+You can use below sample datasource 
+
+examples/monitoring/prometheus-datasources.yaml
+
+### Verify grafana monitoring deployment
+You can do forwarding to open grafana UI locally. 
+
+#kubectl --namespace my-grafana-operator port-forward svc/grafana-service 3000
+
+Verify datasource is created at http://localhost:3000
+
+Import grafana dashboard via UI.
+You can use below sample dashboard 
+
+examples/monitoring/MariaDBDashboard.json
 
 ## Upgrade MariaDB server version
 Mariadb server image is mentioned in CR key "image".
