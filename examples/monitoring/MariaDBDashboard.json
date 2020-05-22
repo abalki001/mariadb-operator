@@ -148,7 +148,7 @@
       "targets": [
         {
           "expr": "mysql_global_status_commands_total{command=\"select\"}",
-          "legendFormat": "Total DB Inserts",
+          "legendFormat": "Total DB Reads",
           "refId": "A"
         }
       ],
