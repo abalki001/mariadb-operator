@@ -90,7 +90,7 @@ spec:
 
 ```
 This CR will start prometheus/mysqld_exporter pod and service. 
-
+Note: The database host and port should be correct for metrics to work.
 
 ## Setup Instructions
 MariaDB Database uses external location on host to store all DB files. This location is default set to "/mnt/data" in CR file. 
