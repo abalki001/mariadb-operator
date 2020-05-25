@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -147,8 +147,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "mysql_global_status_commands_total{command=\"select\"}",
-          "legendFormat": "Total DB Reads",
+          "expr": "mysql_global_status_memory_used",
+          "interval": "",
+          "legendFormat": "Memory Used",
           "refId": "A"
         }
       ],
@@ -156,7 +157,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Total DB Reads",
+      "title": "Memory Used",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -396,5 +397,5 @@
   "timezone": "",
   "title": "MariaDB Dashboard",
   "uid": "MariaDB",
-  "version": 5
+  "version": 6
 }
