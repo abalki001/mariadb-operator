@@ -161,8 +161,8 @@ mariadb-backup   0 0 * * *   False     0        <none>          17m
 At scheduled interval, a new Job will start to take database backup and create a backup file at defined location (default: /mnt/backup)
 
 
-### Create monitoring resources
-You need to have external prometheus and grafana servers deployed.
+### Create monitoring resources (Optional)
+To enable monitoring services, you need to have external prometheus and grafana servers deployed.
 
 #### Deploy prometheus operator
 Install prometheus operator from operatorhub or any other mechanism.
@@ -230,7 +230,7 @@ To upgrade the Server version, change value of "image" key and reapply the CR YA
 ```
 
 
-### Stop Operator and delete all resources
+## Stop Operator and delete all resources
 Run the command to delete all resources:
 ```
 # make uninstall
