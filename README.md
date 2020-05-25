@@ -76,7 +76,7 @@ The Database backup files will be stored at location: '/mnt/backup'. This locati
 apiVersion: mariadb.persistentsys/v1alpha1
 kind: Monitor
 metadata:
-  name: example-monitor
+  name: mariadb-monitor
 spec:
   # Add fields here
   size: 1
