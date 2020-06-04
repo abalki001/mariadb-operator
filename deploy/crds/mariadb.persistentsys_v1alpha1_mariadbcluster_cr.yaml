@@ -1,0 +1,7 @@
+apiVersion: mariadb.persistentsys/v1alpha1
+kind: MariaDBCluster
+metadata:
+  name: example-mariadbcluster
+spec:
+  # Add fields here
+  size: 3
