@@ -6,6 +6,7 @@ import (
 	mariadbv1alpha1 "github.com/persistentsys/mariadb-operator/pkg/apis/mariadb/v1alpha1"
 	"github.com/persistentsys/mariadb-operator/pkg/service"
 	"github.com/persistentsys/mariadb-operator/pkg/utils"
+	"github.com/persistentsys/mariadb-operator/pkg/resource"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -19,7 +20,6 @@ var clusterLog = logf.Log.WithName("mariadbcluster")
 
 const mariadbPort = 3306
 const pvStorageName = "mariadb-pv-storage"
-const pvClaimName = "mariadb-pv-claim"
 
 func mariadbClusterStatefulStateName(v *mariadbv1alpha1.MariaDBCluster) string {
 	return v.Name + "-statefulstate"
@@ -34,6 +34,7 @@ func mariadbClusterAuthName() string {
 }
 
 func (r *ReconcileMariaDBCluster) mariadbClusterStatefulSet(v *mariadbv1alpha1.MariaDBCluster) *appsv1.StatefulSet {
+	pvClaimName := resource.GetMariadbClusterVolumeClaimName(v)
 	labels := utils.MariaDBClusterLabels(v, "mariadb")
 	image := v.Spec.Image
 

@@ -1,7 +1,40 @@
 apiVersion: mariadb.persistentsys/v1alpha1
 kind: MariaDBCluster
 metadata:
-  name: example-mariadbcluster
+  name: mariadbcluster-db1
 spec:
-  # Add fields here
-  size: 3
+  # Root user password
+  rootpwd: password
+
+  # New Database name
+  database: test-db
+  # Database additional user details (base64 encoded)
+  username: db-user 
+  password: db-user 
+
+  # Image name with version
+  image: "mariadb/server:10.3"
+
+  # Database storage Path
+  dataStoragePath: "/mnt/data" 
+
+  # Database storage Size (Ex. 1Gi, 100Mi)
+  dataStorageSize: "1Gi"
+
+  # Port number exposed for Database service 
+  port: 30685
+
+  cluster:
+    enabled: true
+    
+    # Specifies if this is first node in cluster and will initiate a new cluster
+    first_node: true
+    
+    # Name of Node where this pod instance is to be deployed
+    nodeName: mariadb-00 
+  
+
+
+
+
+

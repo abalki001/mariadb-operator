@@ -11,6 +11,7 @@ install: ## Install all resources (CR/CRD's, RBAC and Operator)
 	- kubectl apply -f deploy/crds/mariadb.persistentsys_mariadbs_crd.yaml -n ${NAMESPACE}
 	- kubectl apply -f deploy/crds/mariadb.persistentsys_backups_crd.yaml -n ${NAMESPACE}
 	- kubectl apply -f deploy/crds/mariadb.persistentsys_monitors_crd.yaml -n ${NAMESPACE}
+	- kubectl apply -f deploy/crds/mariadb.persistentsys_mariadbclusters_crd.yaml -n ${NAMESPACE}
 	@echo ....... Applying Rules and Service Account .......
 	- kubectl apply -f deploy/service_account.yaml  -n ${NAMESPACE}
 	- kubectl apply -f deploy/role.yaml -n ${NAMESPACE}
@@ -19,16 +20,17 @@ install: ## Install all resources (CR/CRD's, RBAC and Operator)
 	@echo ....... Applying Operator .......
 	- kubectl apply -f deploy/operator.yaml -n ${NAMESPACE}
 	@echo ....... Creating the CRs .......
-	- kubectl apply -f deploy/crds/mariadb.persistentsys_v1alpha1_mariadb_cr.yaml -n ${NAMESPACE}
-	- kubectl apply -f deploy/crds/mariadb.persistentsys_v1alpha1_backup_cr.yaml -n ${NAMESPACE}
-	- kubectl apply -f deploy/crds/mariadb.persistentsys_v1alpha1_monitor_cr.yaml -n ${NAMESPACE}
-
+	#- kubectl apply -f deploy/crds/mariadb.persistentsys_v1alpha1_mariadb_cr.yaml -n ${NAMESPACE}
+	#- kubectl apply -f deploy/crds/mariadb.persistentsys_v1alpha1_backup_cr.yaml -n ${NAMESPACE}
+	#- kubectl apply -f deploy/crds/mariadb.persistentsys_v1alpha1_monitor_cr.yaml -n ${NAMESPACE}
+	#- kubectl apply -f deploy/crds/mariadb.persistentsys_v1alpha1_mariadbcluster_cr.yaml -n ${NAMESPACE}
 uninstall: ## Uninstall all that all performed in the $ make install
 	@echo ....... Uninstalling .......
 	@echo ....... Deleting CRs.......
-	- kubectl delete -f deploy/crds/mariadb.persistentsys_v1alpha1_backup_cr.yaml -n ${NAMESPACE}
-	- kubectl delete -f deploy/crds/mariadb.persistentsys_v1alpha1_mariadb_cr.yaml -n ${NAMESPACE}
-	- kubectl delete -f deploy/crds/mariadb.persistentsys_v1alpha1_monitor_cr.yaml -n ${NAMESPACE}
+	#- kubectl delete -f deploy/crds/mariadb.persistentsys_v1alpha1_mariadbcluster_cr.yaml -n ${NAMESPACE}
+	#- kubectl delete -f deploy/crds/mariadb.persistentsys_v1alpha1_backup_cr.yaml -n ${NAMESPACE}
+	#- kubectl delete -f deploy/crds/mariadb.persistentsys_v1alpha1_mariadb_cr.yaml -n ${NAMESPACE}
+	#- kubectl delete -f deploy/crds/mariadb.persistentsys_v1alpha1_monitor_cr.yaml -n ${NAMESPACE}
 
 	@echo ....... Deleting Operator ......
 	- kubectl delete -f deploy/operator.yaml -n ${NAMESPACE}
@@ -38,6 +40,7 @@ uninstall: ## Uninstall all that all performed in the $ make install
 	- kubectl delete pv mariadb-${NAMESPACE}-pv
 
 	@echo ....... Deleting CRDs.......
+	- kubectl delete -f deploy/crds/mariadb.persistentsys_mariadbclusters_crd.yaml -n ${NAMESPACE}	
 	- kubectl delete -f deploy/crds/mariadb.persistentsys_backups_crd.yaml -n ${NAMESPACE}
 	- kubectl delete -f deploy/crds/mariadb.persistentsys_mariadbs_crd.yaml -n ${NAMESPACE}
 	- kubectl delete -f deploy/crds/mariadb.persistentsys_monitors_crd.yaml -n ${NAMESPACE}
