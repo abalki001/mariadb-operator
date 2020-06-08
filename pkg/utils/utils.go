@@ -35,3 +35,22 @@ func ServiceMonitorLabels(v *v1alpha1.Monitor, tier string) map[string]string {
 		"tier":       tier,
 	}
 }
+
+// MariaDBClusterLabels Return labels for Mariadb Cluster
+func MariaDBClusterLabels(v *v1alpha1.MariaDBCluster, tier string) map[string]string {
+	return map[string]string{
+		"app":               "MariaDBCluster",
+		"MariaDBCluster_cr": v.Name,
+		"tier":              tier,
+	}
+}
+
+// MariaDBClusterHeadlessServiceLabels Return labels for Cluster Headless Service
+func MariaDBClusterHeadlessServiceLabels(v *v1alpha1.MariaDBCluster, tier string) map[string]string {
+	return map[string]string{
+		"app":               "MariaDBCluster",
+		"MariaDBCluster_cr": v.Name,
+		"tier":              tier,
+		"Cluster_svc_type":  "headless",
+	}
+}

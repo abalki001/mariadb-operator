@@ -21,7 +21,17 @@ func GetMariadbVolumeName(v *v1alpha1.MariaDB) string {
 
 // GetMariadbVolumeClaimName - return name of PVC used in MariaDB
 func GetMariadbVolumeClaimName(v *v1alpha1.MariaDB) string {
-	return v.Name + "-pv-claim"
+	return v.Name + "-" + v.Namespace + "-pv-claim"
+}
+
+// GetMariadbClusterVolumeName - return name of PV used in MariaDB Cluster
+func GetMariadbClusterVolumeName(v *v1alpha1.MariaDBCluster) string {
+	return v.Name + "-" + v.Namespace + "-pv"
+}
+
+// GetMariadbClusterVolumeClaimName - return name of PVC used in MariaDB Cluster
+func GetMariadbClusterVolumeClaimName(v *v1alpha1.MariaDBCluster) string {
+	return v.Name + "-" + v.Namespace + "-pv-claim"
 }
 
 // GetMariadbBkpVolumeName - return name of PV used in DB Backup
@@ -31,7 +41,7 @@ func GetMariadbBkpVolumeName(bkp *v1alpha1.Backup) string {
 
 // GetMariadbBkpVolumeClaimName - return name of PVC used in DB Backup
 func GetMariadbBkpVolumeClaimName(bkp *v1alpha1.Backup) string {
-	return bkp.Name + "-pv-claim"
+	return bkp.Name + "-" + bkp.Namespace + "-pv-claim"
 }
 
 // NewDbBackupPV Create a new PV object for Database Backup
@@ -138,6 +148,79 @@ func NewMariaDbPVC(v *v1alpha1.MariaDB, scheme *runtime.Scheme) *corev1.Persiste
 				},
 			},
 			VolumeName: GetMariadbVolumeName(v),
+		},
+	}
+
+	volLog.Info("PVC created for MariaDB ")
+	controllerutil.SetControllerReference(v, pvc, scheme)
+	return pvc
+}
+
+// NewMariaDbClusterPV Create a new PV object for MariaDB Cluster
+func NewMariaDbClusterPV(v *v1alpha1.MariaDBCluster, scheme *runtime.Scheme) *corev1.PersistentVolume {
+	volLog.Info("Creating new PV for MariaDBCluster")
+	labels := utils.MariaDBClusterLabels(v, "mariadb-cluster")
+
+	pv := &corev1.PersistentVolume{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: GetMariadbClusterVolumeName(v),
+			// Namespace: v.Namespace,
+			Labels: labels,
+		},
+		Spec: corev1.PersistentVolumeSpec{
+			StorageClassName: "manual",
+			Capacity: corev1.ResourceList{
+				corev1.ResourceName(corev1.ResourceStorage): resource.MustParse(v.Spec.DataStorageSize),
+			},
+			AccessModes: []v1.PersistentVolumeAccessMode{v1.ReadWriteMany},
+			PersistentVolumeSource: corev1.PersistentVolumeSource{
+				HostPath: &corev1.HostPathVolumeSource{
+					Path: v.Spec.DataStoragePath},
+			},
+
+			NodeAffinity: &corev1.VolumeNodeAffinity{
+				Required: &corev1.NodeSelector{
+					NodeSelectorTerms: []corev1.NodeSelectorTerm{
+						{
+							MatchExpressions: []corev1.NodeSelectorRequirement{
+								{
+									Key:      "kubernetes.io/hostname",
+									Values:   []string{v.Spec.Cluster.NodeName},
+									Operator: corev1.NodeSelectorOpIn,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	volLog.Info("PV created for MariaDB ")
+	controllerutil.SetControllerReference(v, pv, scheme)
+	return pv
+}
+
+// NewMariaDbClusterPVC Create a new PV Claim object for MariaDB Cluster
+func NewMariaDbClusterPVC(v *v1alpha1.MariaDBCluster, scheme *runtime.Scheme) *corev1.PersistentVolumeClaim {
+	volLog.Info("Creating new PVC for MariaDBCluster")
+	labels := utils.MariaDBClusterLabels(v, "mariadb-cluster")
+	storageClassName := "manual"
+	pvc := &corev1.PersistentVolumeClaim{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      GetMariadbClusterVolumeClaimName(v),
+			Namespace: v.Namespace,
+			Labels:    labels,
+		},
+		Spec: corev1.PersistentVolumeClaimSpec{
+			StorageClassName: &storageClassName,
+			AccessModes:      []v1.PersistentVolumeAccessMode{v1.ReadWriteMany},
+			Resources: corev1.ResourceRequirements{
+				Requests: corev1.ResourceList{
+					corev1.ResourceName(corev1.ResourceStorage): resource.MustParse(v.Spec.DataStorageSize),
+				},
+			},
+			VolumeName: GetMariadbClusterVolumeName(v),
 		},
 	}
 

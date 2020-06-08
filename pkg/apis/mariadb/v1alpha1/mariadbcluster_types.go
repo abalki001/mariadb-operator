@@ -12,6 +12,44 @@ type MariaDBClusterSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
+
+	// Database additional user details (base64 encoded)
+	Username string `json:"username"`
+
+	// Database additional user password (base64 encoded)
+	Password string `json:"password"`
+
+	// New Database name
+	Database string `json:"database"`
+
+	// Root user password
+	Rootpwd string `json:"rootpwd"`
+
+	// Image name with version
+	Image string `json:"image"`
+
+	// Database storage Path
+	DataStoragePath string `json:"dataStoragePath"`
+
+	// Database storage Size (Ex. 1Gi, 100Mi)
+	DataStorageSize string `json:"dataStorageSize"`
+
+	// Port number exposed for Database service
+	Port int32 `json:"port"`
+
+	// Cluster Configuration
+	Cluster ClusterDefinitionStruct `json:"cluster,omitempty"`
+}
+
+// Cluster definitions
+type ClusterDefinitionStruct struct {
+	Enabled bool `json:"enabled,omitempty"`
+
+	// Specifies if this is first node in cluster and will initiate a new cluster
+	FirstNode bool `json:"firstNode,omitempty"`
+
+	// Name of Node where this pod instance is to be deployed
+	NodeName string `json:"nodeName"`
 }
 
 // MariaDBClusterStatus defines the observed state of MariaDBCluster
