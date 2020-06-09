@@ -115,10 +115,10 @@ func FetchPVCByNameAndNS(name, namespace string, client client.Client) (*corev1.
 	return pvc, err
 }
 
-// FetchClusterHeadlessService search in the cluster for 1 Service managed by the Database Controller
+// FetchClusterHeadlessServiceList search in the cluster for 1 Service managed by the Database Controller
 func FetchClusterHeadlessServiceList(cluster *v1alpha1.MariaDBCluster, client client.Client) (*corev1.ServiceList, error) {
 	rfLog.Info("Fetching Headless Service for MariaDB Cluster...")
-	listOps := buildDBClusterHeadlessServiceCriteria(cluster)
+	listOps := buildDBClusterHeadlessServiceListCriteria(cluster)
 	dbServiceList := &corev1.ServiceList{}
 	err := client.List(context.TODO(), dbServiceList, listOps)
 	if err != nil {
@@ -142,9 +142,9 @@ func buildDatabaseBackupCriteria(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB) *cl
 	return listOps
 }
 
-// buildDatabaseCreteria returns client.ListOptions required to fetch the secondary resource created by
-func buildDBClusterHeadlessServiceCriteria(cluster *v1alpha1.MariaDBCluster) *client.ListOptions {
-	labelSelector := labels.SelectorFromSet(utils.MariaDBClusterHeadlessServiceLabels(cluster, "mariadb-cluster"))
+// buildDBClusterHeadlessServiceListCriteria returns client.ListOptions required to fetch the secondary resource created by
+func buildDBClusterHeadlessServiceListCriteria(cluster *v1alpha1.MariaDBCluster) *client.ListOptions {
+	labelSelector := labels.SelectorFromSet(utils.MariaDBClusterHeadlessServiceListLabels(cluster, "mariadb-cluster"))
 	listOps := &client.ListOptions{Namespace: cluster.Namespace, LabelSelector: labelSelector}
 	return listOps
 }
