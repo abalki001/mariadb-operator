@@ -63,11 +63,21 @@ func (r *ReconcileMariaDBCluster) mariadbClusterStatefulSet(v *mariadbv1alpha1.M
 		//gcommUrl := ""
 	} else {
 		// Print Service list
-		reqLogger := clusterLog.WithValues("Service_List", dbServiceList)
+		reqLogger := clusterLog.WithValues("Service_List", dbServiceList, "SIze", len(dbServiceList.Items))	
 		reqLogger.Info("MariaDB CLuster Headless Service List")
 
 		// TODO: Get list of names from service for gcomm_url
+		// serviceItems := dbServiceList.Items
 
+		//svcItem := &corev1.Service{}
+		for i := 0; i < len(dbServiceList.Items); i++ {
+			svcItem := dbServiceList.Items[i]
+			svcName := svcItem.ObjectMeta.Name
+			
+			if svcName != mariadbClusterStatefulStateName(v) {
+				gcommUrl = gcommUrl + svcName + "," 
+			}
+		}
 	}
 
 	// Create StatefulSet Deployment object
