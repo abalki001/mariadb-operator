@@ -4,9 +4,9 @@ import (
 	"context"
 
 	mariadbv1alpha1 "github.com/persistentsys/mariadb-operator/pkg/apis/mariadb/v1alpha1"
+	"github.com/persistentsys/mariadb-operator/pkg/resource"
 	"github.com/persistentsys/mariadb-operator/pkg/service"
 	"github.com/persistentsys/mariadb-operator/pkg/utils"
-	"github.com/persistentsys/mariadb-operator/pkg/resource"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
