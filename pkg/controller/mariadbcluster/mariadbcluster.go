@@ -75,7 +75,7 @@ func (r *ReconcileMariaDBCluster) mariadbClusterStatefulSet(v *mariadbv1alpha1.M
 			svcName := svcItem.ObjectMeta.Name
 			
 			if svcName != mariadbClusterStatefulStateName(v) {
-				gcommUrl = gcommUrl + svcName + "," 
+				gcommUrl = gcommUrl + svcName + "." + svcItem.ObjectMeta.Namespace + "," 
 			}
 		}
 	}
