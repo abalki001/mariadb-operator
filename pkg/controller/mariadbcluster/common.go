@@ -20,7 +20,7 @@ func (r *ReconcileMariaDBCluster) ensureStatefulSet(request reconcile.Request,
 ) (*reconcile.Result, error) {
 
 	// See if deployment already exists and create if it doesn't
-	found := &appsv1.Deployment{}
+	found := &appsv1.StatefulSet{}
 	err := r.client.Get(context.TODO(), types.NamespacedName{
 		Name:      dep.Name,
 		Namespace: instance.Namespace,
@@ -28,12 +28,12 @@ func (r *ReconcileMariaDBCluster) ensureStatefulSet(request reconcile.Request,
 	if err != nil && errors.IsNotFound(err) {
 
 		// Create the deployment
-		log.Info("Creating a new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
+		log.Info("Creating a new StatefulSet Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
 		err = r.client.Create(context.TODO(), dep)
 
 		if err != nil {
 			// Deployment failed
-			log.Error(err, "Failed to create new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
+			log.Error(err, "Failed to create new StatefulSet Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
 			return &reconcile.Result{}, err
 		} else {
 			// Deployment was successful
@@ -41,7 +41,7 @@ func (r *ReconcileMariaDBCluster) ensureStatefulSet(request reconcile.Request,
 		}
 	} else if err != nil {
 		// Error that isn't due to the deployment not existing
-		log.Error(err, "Failed to get Deployment")
+		log.Error(err, "Failed to get StatefulSet Deployment")
 		return &reconcile.Result{}, err
 	}
 
@@ -64,10 +64,10 @@ func (r *ReconcileMariaDBCluster) ensureStatefulSet(request reconcile.Request,
 	if applyChange {
 		err = r.client.Update(context.TODO(), dep)
 		if err != nil {
-			log.Error(err, "Failed to update Deployment.", "Deployment.Namespace", found.Namespace, "Deployment.Name", found.Name)
+			log.Error(err, "Failed to update StatefulSet Deployment.", "Deployment.Namespace", found.Namespace, "Deployment.Name", found.Name)
 			return &reconcile.Result{}, err
 		}
-		log.Info("Updated Deployment image. ")
+		log.Info("Updated StatefulSet Deployment image. ")
 	}
 
 	return nil, nil

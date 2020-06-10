@@ -63,7 +63,7 @@ func (r *ReconcileMariaDBCluster) mariadbClusterStatefulSet(v *mariadbv1alpha1.M
 		//gcommUrl := ""
 	} else {
 		// Print Service list
-		reqLogger := clusterLog.WithValues("Service_List", dbServiceList, "SIze", len(dbServiceList.Items))
+		reqLogger := clusterLog.WithValues("Service_List_Size", len(dbServiceList.Items))
 		reqLogger.Info("MariaDB CLuster Headless Service List")
 
 		// TODO: Get list of names from service for gcomm_url
