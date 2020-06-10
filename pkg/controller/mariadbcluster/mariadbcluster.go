@@ -63,7 +63,7 @@ func (r *ReconcileMariaDBCluster) mariadbClusterStatefulSet(v *mariadbv1alpha1.M
 		//gcommUrl := ""
 	} else {
 		// Print Service list
-		reqLogger := clusterLog.WithValues("Service_List", dbServiceList, "SIze", len(dbServiceList.Items))	
+		reqLogger := clusterLog.WithValues("Service_List", dbServiceList, "SIze", len(dbServiceList.Items))
 		reqLogger.Info("MariaDB CLuster Headless Service List")
 
 		// TODO: Get list of names from service for gcomm_url
@@ -73,9 +73,9 @@ func (r *ReconcileMariaDBCluster) mariadbClusterStatefulSet(v *mariadbv1alpha1.M
 		for i := 0; i < len(dbServiceList.Items); i++ {
 			svcItem := dbServiceList.Items[i]
 			svcName := svcItem.ObjectMeta.Name
-			
+
 			if svcName != mariadbClusterStatefulStateName(v) {
-				gcommUrl = gcommUrl + svcName + "." + svcItem.ObjectMeta.Namespace + "," 
+				gcommUrl = gcommUrl + svcName + "." + svcItem.ObjectMeta.Namespace + ","
 			}
 		}
 	}
@@ -162,6 +162,7 @@ func (r *ReconcileMariaDBCluster) mariadbClusterStatefulSet(v *mariadbv1alpha1.M
 
 func (r *ReconcileMariaDBCluster) mariadbClusterHeadlessService(v *mariadbv1alpha1.MariaDBCluster) *corev1.Service {
 	labels := utils.MariaDBClusterHeadlessServiceLabels(v, "mariadb-cluster")
+	selectorLabels := utils.MariaDBClusterHeadlessServiceSelector(v, "mariadb-cluster")
 
 	s := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
@@ -170,7 +171,7 @@ func (r *ReconcileMariaDBCluster) mariadbClusterHeadlessService(v *mariadbv1alph
 			Labels:    labels,
 		},
 		Spec: corev1.ServiceSpec{
-			Selector:  labels,
+			Selector:  selectorLabels,
 			ClusterIP: "None",
 			Ports: []corev1.ServicePort{{
 				Protocol:   corev1.ProtocolTCP,

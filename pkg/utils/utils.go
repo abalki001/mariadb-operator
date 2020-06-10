@@ -55,6 +55,15 @@ func MariaDBClusterHeadlessServiceLabels(v *v1alpha1.MariaDBCluster, tier string
 	}
 }
 
+// MariaDBClusterHeadlessServiceSelector Return labels for Cluster Headless Service Selector
+func MariaDBClusterHeadlessServiceSelector(v *v1alpha1.MariaDBCluster, tier string) map[string]string {
+	return map[string]string{
+		"app":               "MariaDBCluster",
+		"MariaDBCluster_cr": v.Name,
+		"tier":              tier,
+	}
+}
+
 // MariaDBClusterHeadlessServiceListLabels Return labels for Cluster Headless Service
 func MariaDBClusterHeadlessServiceListLabels(v *v1alpha1.MariaDBCluster, tier string) map[string]string {
 	return map[string]string{
