@@ -35,7 +35,7 @@ func mariadbClusterAuthName() string {
 
 func (r *ReconcileMariaDBCluster) mariadbClusterStatefulSet(v *mariadbv1alpha1.MariaDBCluster) *appsv1.StatefulSet {
 	pvClaimName := resource.GetMariadbClusterVolumeClaimName(v)
-	labels := utils.MariaDBClusterLabels(v, "mariadb")
+	labels := utils.MariaDBClusterLabels(v, "mariadb-cluster")
 	image := v.Spec.Image
 
 	dbname := v.Spec.Database
