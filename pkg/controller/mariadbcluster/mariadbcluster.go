@@ -29,6 +29,10 @@ func mariadbServiceName(v *mariadbv1alpha1.MariaDBCluster) string {
 	return v.Name + "-service"
 }
 
+func mariadbLBServiceName(v *mariadbv1alpha1.MariaDBCluster) string {
+	return v.Namespace + "-lb-service"
+}
+
 func mariadbClusterAuthName() string {
 	return "mariadb-cluster-auth"
 }
@@ -199,6 +203,33 @@ func (r *ReconcileMariaDBCluster) mariadbClusterHeadlessService(v *mariadbv1alph
 				},
 			},
 			Type: corev1.ServiceTypeClusterIP,
+		},
+	}
+
+	controllerutil.SetControllerReference(v, s, r.scheme)
+	return s
+}
+
+// mariadbClusterLBService Create Load Balancer Service to expose DB outside Cluster
+func (r *ReconcileMariaDBCluster) mariadbClusterLBService(v *mariadbv1alpha1.MariaDBCluster) *corev1.Service {
+	labels := utils.MariaDBClusterHeadlessServiceLabels(v, "mariadb-cluster")
+	selectorLabels := utils.MariaDBClusterHeadlessServiceSelector(v, "mariadb-cluster")
+
+	s := &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      mariadbLBServiceName(v),
+			Namespace: v.Namespace,
+			Labels:    labels,
+		},
+		Spec: corev1.ServiceSpec{
+			Selector: selectorLabels,
+			Ports: []corev1.ServicePort{{
+				Protocol:   corev1.ProtocolTCP,
+				Port:       mariadbPort,
+				TargetPort: intstr.FromInt(3306),
+				NodePort:   v.Spec.Port,
+			}},
+			Type: corev1.ServiceTypeNodePort,
 		},
 	}
 

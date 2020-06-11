@@ -55,12 +55,30 @@ func MariaDBClusterHeadlessServiceLabels(v *v1alpha1.MariaDBCluster, tier string
 	}
 }
 
+// MariaDBClusterLBServiceLabels Return labels for Cluster Load Balancer Service
+func MariaDBClusterLBServiceLabels(v *v1alpha1.MariaDBCluster, tier string) map[string]string {
+	return map[string]string{
+		"app":                      "MariaDBCluster",
+		"MariaDBCluster_namespace": v.Namespace,
+		"tier":                     tier,
+		"Cluster_svc_type":         "LoadBalancer",
+	}
+}
+
 // MariaDBClusterHeadlessServiceSelector Return labels for Cluster Headless Service Selector
 func MariaDBClusterHeadlessServiceSelector(v *v1alpha1.MariaDBCluster, tier string) map[string]string {
 	return map[string]string{
 		"app":               "MariaDBCluster",
 		"MariaDBCluster_cr": v.Name,
 		"tier":              tier,
+	}
+}
+
+// MariaDBClusterLBServiceSelector Return labels for Cluster Load Balancer Service Service Selector
+func MariaDBClusterLBServiceSelector(v *v1alpha1.MariaDBCluster, tier string) map[string]string {
+	return map[string]string{
+		"app":  "MariaDBCluster",
+		"tier": tier,
 	}
 }
 

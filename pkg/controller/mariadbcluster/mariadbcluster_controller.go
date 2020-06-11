@@ -111,7 +111,14 @@ func (r *ReconcileMariaDBCluster) Reconcile(request reconcile.Request) (reconcil
 		return *result, err
 	}
 
+	// Check if headless service is created. If not found, create one
 	result, err = r.ensureService(request, instance, r.mariadbClusterHeadlessService(instance))
+	if result != nil {
+		return *result, err
+	}
+
+	// Check if LoadBalancer service is created. If not found, create one
+	result, err = r.ensureService(request, instance, r.mariadbClusterLBService(instance))
 	if result != nil {
 		return *result, err
 	}
