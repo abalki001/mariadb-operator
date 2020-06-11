@@ -212,8 +212,8 @@ func (r *ReconcileMariaDBCluster) mariadbClusterHeadlessService(v *mariadbv1alph
 
 // mariadbClusterLBService Create Load Balancer Service to expose DB outside Cluster
 func (r *ReconcileMariaDBCluster) mariadbClusterLBService(v *mariadbv1alpha1.MariaDBCluster) *corev1.Service {
-	labels := utils.MariaDBClusterHeadlessServiceLabels(v, "mariadb-cluster")
-	selectorLabels := utils.MariaDBClusterHeadlessServiceSelector(v, "mariadb-cluster")
+	labels := utils.MariaDBClusterLBServiceLabels(v, "mariadb-cluster")
+	selectorLabels := utils.MariaDBClusterLBServiceSelector(v, "mariadb-cluster")
 
 	s := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
