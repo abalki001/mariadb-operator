@@ -18,5 +18,9 @@ spec:
   # Set to true for cluster setup, else false
   clusterEnabled: true
 
+
+  # If Cluster is enabled, set name of any cluster CR
+  clusterCrName: "mariadbcluster-db1"
+
   
 

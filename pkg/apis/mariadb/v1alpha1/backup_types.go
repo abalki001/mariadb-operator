@@ -27,6 +27,9 @@ type BackupSpec struct {
 	// Enable Cluster flag
 	// Set to true for cluster setup, else false
 	ClusterEnabled bool `json:"clusterEnabled,omitempty"`
+
+	// If Cluster is enabled, set name of any cluster CR
+	ClusterCrName String `json:"clusterCrName,omitempty"`
 }
 
 // BackupStatus defines the observed state of Backup
