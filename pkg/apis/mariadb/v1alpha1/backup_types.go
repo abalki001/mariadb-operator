@@ -23,6 +23,10 @@ type BackupSpec struct {
 
 	// Backup Size (Ex. 1Gi, 100Mi)
 	BackupSize string `json:"backupSize"`
+
+	// Enable Cluster flag
+	// Set to true for cluster setup, else false
+	ClusterEnabled bool `json:"clusterEnabled,omitempty"`
 }
 
 // BackupStatus defines the observed state of Backup

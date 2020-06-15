@@ -27,9 +27,6 @@ spec:
   cluster:
     enabled: true
     
-    # Specifies if this is first node in cluster and will initiate a new cluster
-    first_node: true
-    
     # Name of Node where this pod instance is to be deployed
     nodeName: mariadb-00 
   

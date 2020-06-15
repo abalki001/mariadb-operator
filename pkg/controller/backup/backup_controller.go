@@ -82,8 +82,7 @@ type ReconcileBackup struct {
 	dbPod     *corev1.Pod
 	dbService *corev1.Service
 	bkpPV     *corev1.PersistentVolume
-	bkpPVC     *corev1.PersistentVolumeClaim
-
+	bkpPVC    *corev1.PersistentVolumeClaim
 }
 
 // Reconcile reads that state of the cluster for a Backup object and makes changes based on the state read
@@ -118,10 +117,31 @@ func (r *ReconcileBackup) Reconcile(request reconcile.Request) (reconcile.Result
 	log.Info("Adding backup mandatory specs")
 	utils.AddBackupMandatorySpecs(bkp)
 
-	// Create mandatory objects for the Backup
-	if err := r.createResources(bkp, request); err != nil {
-		log.Error(err, "Failed to create and update the secondary resource required for the Backup CR")
-		return reconcile.Result{}, err
+	if bkp.Spec.ClusterEnabled {
+		// Cluster Enabled
+		log.Info("Reconciling Backup for Cluster setup...")
+
+		// Create mandatory objects for the Backup
+		if err := r.createClusterBackupResources(bkp, request); err != nil {
+			log.Error(err, "Failed to create and resources for Database Cluster Backup CR")
+			return reconcile.Result{}, err
+		}
+
+		// get headless service list: Selector: Cluster_svc_type=headless, app=MariaDBCluster, tier=mariadb-cluster
+
+		// get first element from list, set it as host
+
+		// schedule cron as earlier
+
+	} else {
+		// Single node setup
+		log.Info("Reconciling Backup for single node DB setup...")
+
+		// Create mandatory objects for the Backup
+		if err := r.createResources(bkp, request); err != nil {
+			log.Error(err, "Failed to create and update the secondary resource required for the Backup CR")
+			return reconcile.Result{}, err
+		}
 	}
 
 	log.Info("Stop Reconciling Backup ...")
@@ -159,13 +179,13 @@ func (r *ReconcileBackup) createResources(bkp *mariadbv1alpha1.Backup, request r
 	}
 
 	// Check if the PV is created, if not create one
-	if err := r.createBackupPV(bkp, db); err != nil {
+	if err := r.createBackupPV(bkp); err != nil {
 		log.Error(err, "Failed to create the Persistent Volume for MariaDB Backup")
 		return err
 	}
 
 	// Check if the PVC is created, if not create one
-	if err := r.createBackupPVC(bkp, db); err != nil {
+	if err := r.createBackupPVC(bkp); err != nil {
 		log.Error(err, "Failed to create the Persistent Volume Claim for MariaDB Backup")
 		return err
 	}
@@ -173,6 +193,51 @@ func (r *ReconcileBackup) createResources(bkp *mariadbv1alpha1.Backup, request r
 	// Check if the cronJob is created, if not create one
 	if err := r.createCronJob(bkp, db); err != nil {
 		log.Error(err, "Failed to create the CronJob")
+		return err
+	}
+
+	return nil
+}
+
+//createClusterBackupResources will create and update the secondary resource which are required
+//   in order to make works successfully the primary resource(CR)
+func (r *ReconcileBackup) createClusterBackupResources(bkp *mariadbv1alpha1.Backup, request reconcile.Request) error {
+	log.Info("Creating resources for Cluster Backup...")
+
+	// Check if the database instance was created
+	dbCluster, err := service.FetchDatabaseClusterCR("mariadb", request.Namespace, r.client)
+	if err != nil {
+		log.Error(err, "Failed to fetch Database Cluster instance/cr")
+		return err
+	}
+
+	dbServiceList, err := service.FetchClusterHeadlessServiceList(dbCluster, r.client)
+	if err != nil || dbServiceList == nil {
+		log.Error(err, "Failed to fetch Database Cluster Service List")
+		return err
+	}
+
+	dbService := dbServiceList.Items[0]
+	hostName := dbService.ObjectMeta.Name + "." + dbService.ObjectMeta.Namespace
+
+	reqLogger := log.WithValues("Hostname", hostName)
+	reqLogger.Info("Hostname generated from DB ServiceList")
+
+	// Check if the PV is created, if not create one
+	if err := r.createBackupPV(bkp); err != nil {
+		log.Error(err, "Failed to create the Persistent Volume for MariaDB Backup")
+		return err
+	}
+
+	// Check if the PVC is created, if not create one
+	if err := r.createBackupPVC(bkp); err != nil {
+		log.Error(err, "Failed to create the Persistent Volume Claim for MariaDB Backup")
+		return err
+	}
+
+	// Check if the cronJob is created, if not create one
+	if err := r.createDBClusterCronJob(bkp, dbCluster, hostName); err != nil {
+		log.Error(err, "Failed to create the CronJob for DB Cluster Backup")
 		return err
 	}
 

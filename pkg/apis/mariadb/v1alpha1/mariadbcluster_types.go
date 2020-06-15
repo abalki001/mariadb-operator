@@ -45,9 +45,6 @@ type MariaDBClusterSpec struct {
 type ClusterDefinitionStruct struct {
 	Enabled bool `json:"enabled,omitempty"`
 
-	// Specifies if this is first node in cluster and will initiate a new cluster
-	FirstNode bool `json:"firstNode,omitempty"`
-
 	// Name of Node where this pod instance is to be deployed
 	NodeName string `json:"nodeName"`
 }

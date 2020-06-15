@@ -13,3 +13,10 @@ spec:
   # This spec allow you setup the backup frequency
   # Default: "0 0 * * *" # daily at 00:00
   schedule: "0 0 * * *"
+
+  # Enable Cluster flag
+  # Set to true for cluster setup, else false
+  clusterEnabled: true
+
+  
+

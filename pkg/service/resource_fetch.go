@@ -25,6 +25,14 @@ func FetchDatabaseCR(name, namespace string, client client.Client) (*v1alpha1.Ma
 	return db, err
 }
 
+// FetchDatabaseClusterCR fetches CR of MariDBCluster
+func FetchDatabaseClusterCR(name, namespace string, client client.Client) (*v1alpha1.MariaDBCluster, error) {
+	rfLog.Info("Fetching Database Cluster CR ...")
+	dbCluster := &v1alpha1.MariaDBCluster{}
+	err := client.Get(context.TODO(), types.NamespacedName{Name: name, Namespace: namespace}, dbCluster)
+	return dbCluster, err
+}
+
 // FetchBackupCR fetches CR of Maria DB Backup object
 func FetchBackupCR(name, namespace string, client client.Client) (*v1alpha1.Backup, error) {
 	rfLog.Info("Fetching Backup CR ...")

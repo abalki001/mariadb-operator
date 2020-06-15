@@ -45,13 +45,12 @@ func GetMariadbBkpVolumeClaimName(bkp *v1alpha1.Backup) string {
 }
 
 // NewDbBackupPV Create a new PV object for Database Backup
-func NewDbBackupPV(bkp *v1alpha1.Backup, v *v1alpha1.MariaDB, scheme *runtime.Scheme) *corev1.PersistentVolume {
+func NewDbBackupPV(bkp *v1alpha1.Backup, scheme *runtime.Scheme) *corev1.PersistentVolume {
 	volLog.Info("Creating new PV for Database Backup")
 	labels := utils.MariaDBBkpLabels(bkp, "mariadb-backup")
 	pv := &corev1.PersistentVolume{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: GetMariadbBkpVolumeName(bkp),
-			// Namespace: v.Namespace,
+			Name:   GetMariadbBkpVolumeName(bkp),
 			Labels: labels,
 		},
 		Spec: corev1.PersistentVolumeSpec{
@@ -73,14 +72,14 @@ func NewDbBackupPV(bkp *v1alpha1.Backup, v *v1alpha1.MariaDB, scheme *runtime.Sc
 }
 
 // NewDbBackupPVC Create a new PV Claim object for Database Backup
-func NewDbBackupPVC(bkp *v1alpha1.Backup, v *v1alpha1.MariaDB, scheme *runtime.Scheme) *corev1.PersistentVolumeClaim {
+func NewDbBackupPVC(bkp *v1alpha1.Backup, scheme *runtime.Scheme) *corev1.PersistentVolumeClaim {
 	volLog.Info("Creating new PVC for Database Backup")
 	labels := utils.MariaDBBkpLabels(bkp, "mariadb-backup")
 	storageClassName := "manual"
 	pvc := &corev1.PersistentVolumeClaim{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      GetMariadbBkpVolumeClaimName(bkp),
-			Namespace: v.Namespace,
+			Namespace: bkp.Namespace,
 			Labels:    labels,
 		},
 		Spec: corev1.PersistentVolumeClaimSpec{
