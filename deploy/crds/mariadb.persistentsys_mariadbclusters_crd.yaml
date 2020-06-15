@@ -36,10 +36,6 @@ spec:
               properties:
                 enabled:
                   type: boolean
-                firstNode:
-                  description: Specifies if this is first node in cluster and will
-                    initiate a new cluster
-                  type: boolean
                 nodeName:
                   description: Name of Node where this pod instance is to be deployed
                   type: string

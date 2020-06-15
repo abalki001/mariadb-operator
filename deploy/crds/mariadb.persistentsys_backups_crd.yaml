@@ -37,6 +37,10 @@ spec:
             backupSize:
               description: Backup Size (Ex. 1Gi, 100Mi)
               type: string
+            clusterEnabled:
+              description: Enable Cluster flag Set to true for cluster setup, else
+                false
+              type: boolean
             schedule:
               description: 'Schedule period for the CronJob. This spec allow you setup
                 the backup frequency Default: "0 0 * * *" # daily at 00:00'
