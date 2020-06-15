@@ -95,14 +95,14 @@ func NewBackupCronJob(bkp *v1alpha1.Backup, db *v1alpha1.MariaDB, scheme *runtim
 func NewDBClusterBackupCronJob(bkp *v1alpha1.Backup, cluster *v1alpha1.MariaDBCluster, hostname string, scheme *runtime.Scheme) *v1beta1.CronJob {
 
 	bkpPVClaimName := GetMariadbBkpVolumeClaimName(bkp)
-	dbPort := cluster.Spec.Port
+	// dbPort := cluster.Spec.Port
 
 	// currentTime := time.Now()
 	//formatedDate := currentTime.Format("2006-01-02_15:04:05")
 	// filename := "/var/lib/mysql/backup/backup_" + formatedDate + ".sql"
 	filename := "/var/lib/mysql/backup_`date +%F_%T`.sql"
 	backupCommand := "echo 'Starting DB Backup'  &&  " +
-		"mysqldump -P " + fmt.Sprint(dbPort) + " -h '" + hostname +
+		"mysqldump -P 3306 " + " -h '" + hostname +
 		"' --lock-tables --all-databases > " + filename +
 		"&& echo 'Completed DB Backup'"
 

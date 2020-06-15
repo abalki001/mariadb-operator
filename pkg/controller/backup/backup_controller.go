@@ -205,7 +205,7 @@ func (r *ReconcileBackup) createClusterBackupResources(bkp *mariadbv1alpha1.Back
 	log.Info("Creating resources for Cluster Backup...")
 
 	// Check if the database instance was created
-	dbCluster, err := service.FetchDatabaseClusterCR("mariadb", request.Namespace, r.client)
+	dbCluster, err := service.FetchDatabaseClusterCR("mariadbcluster-db1", request.Namespace, r.client)
 	if err != nil {
 		log.Error(err, "Failed to fetch Database Cluster instance/cr")
 		return err
