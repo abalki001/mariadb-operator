@@ -37,6 +37,9 @@ spec:
             backupSize:
               description: Backup Size (Ex. 1Gi, 100Mi)
               type: string
+            clusterCrName:
+              description: If Cluster is enabled, set name of any cluster CR
+              type: string
             clusterEnabled:
               description: Enable Cluster flag Set to true for cluster setup, else
                 false
