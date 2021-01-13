@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: mariadb-pv-claim
 spec:
-  storageClassName: manual
+  storageClassName: default
   accessModes:
     - ReadWriteOnce
   resources:
