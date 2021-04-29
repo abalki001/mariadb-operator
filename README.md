@@ -4,7 +4,7 @@
 * Setup a MariaDB server. Database server version can be configured in the CR file.
 * Creates a new custom Database along with a user credential set for the custom database.
 * Operator uses Persistent Volume where MariaDB can write its data files.
-* Seamless upgrades of MariaDB is possible without loosing data.
+* Seamless upgrades of MariaDB is possible without losing data.
 * Take database backup at defined intervals
 * Provides mariadb metrics with prometheus/mysqld_exporter
 
