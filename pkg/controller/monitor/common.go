@@ -3,8 +3,6 @@ package monitor
 import (
 	"context"
 
-	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
-	grafanav1alpha1 "github.com/integr8ly/grafana-operator/pkg/apis/integreatly/v1alpha1"
 	mariadbv1alpha1 "github.com/persistentsys/mariadb-operator/pkg/apis/mariadb/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -111,67 +109,67 @@ func (r *ReconcileMonitor) ensureService(request reconcile.Request,
 	return nil, nil
 }
 
-func (r *ReconcileMonitor) ensureServiceMonitor(request reconcile.Request,
-	instance *mariadbv1alpha1.Monitor,
-	s *monitoringv1.ServiceMonitor,
-) (*reconcile.Result, error) {
-	found := &monitoringv1.ServiceMonitor{}
-	err := r.client.Get(context.TODO(), types.NamespacedName{
-		Name:      s.Name,
-		Namespace: instance.Namespace,
-	}, found)
-	if err != nil && errors.IsNotFound(err) {
+// func (r *ReconcileMonitor) ensureServiceMonitor(request reconcile.Request,
+// 	instance *mariadbv1alpha1.Monitor,
+// 	s *monitoringv1.ServiceMonitor,
+// ) (*reconcile.Result, error) {
+// 	found := &monitoringv1.ServiceMonitor{}
+// 	err := r.client.Get(context.TODO(), types.NamespacedName{
+// 		Name:      s.Name,
+// 		Namespace: instance.Namespace,
+// 	}, found)
+// 	if err != nil && errors.IsNotFound(err) {
 
-		// Create the service
-		log.Info("Creating a new ServiceMonitor", "ServiceMonitor.Namespace", s.Namespace, "ServiceMonitor.Name", s.Name)
-		err = r.client.Create(context.TODO(), s)
+// 		// Create the service
+// 		log.Info("Creating a new ServiceMonitor", "ServiceMonitor.Namespace", s.Namespace, "ServiceMonitor.Name", s.Name)
+// 		err = r.client.Create(context.TODO(), s)
 
-		if err != nil {
-			// Creation failed
-			log.Error(err, "Failed to create new ServiceMonitor", "ServiceMonitor.Namespace", s.Namespace, "ServiceMonitor.Name", s.Name)
-			return &reconcile.Result{}, err
-		} else {
-			// Creation was successful
-			return nil, nil
-		}
-	} else if err != nil {
-		// Error that isn't due to the service not existing
-		log.Error(err, "Failed to get ServiceMonitor")
-		return &reconcile.Result{}, err
-	}
+// 		if err != nil {
+// 			// Creation failed
+// 			log.Error(err, "Failed to create new ServiceMonitor", "ServiceMonitor.Namespace", s.Namespace, "ServiceMonitor.Name", s.Name)
+// 			return &reconcile.Result{}, err
+// 		} else {
+// 			// Creation was successful
+// 			return nil, nil
+// 		}
+// 	} else if err != nil {
+// 		// Error that isn't due to the service not existing
+// 		log.Error(err, "Failed to get ServiceMonitor")
+// 		return &reconcile.Result{}, err
+// 	}
 
-	return nil, nil
-}
+// 	return nil, nil
+// }
 
-func (r *ReconcileMonitor) ensureGrafanaDashboard(request reconcile.Request,
-	instance *mariadbv1alpha1.Monitor,
-	s *grafanav1alpha1.GrafanaDashboard,
-) (*reconcile.Result, error) {
+// func (r *ReconcileMonitor) ensureGrafanaDashboard(request reconcile.Request,
+// 	instance *mariadbv1alpha1.Monitor,
+// 	s *grafanav1alpha1.GrafanaDashboard,
+// ) (*reconcile.Result, error) {
 
-	found := &grafanav1alpha1.GrafanaDashboard{}
-	err := r.client.Get(context.TODO(), types.NamespacedName{
-		Name:      s.Name,
-		Namespace: instance.Namespace,
-	}, found)
-	if err != nil && errors.IsNotFound(err) {
+// 	found := &grafanav1alpha1.GrafanaDashboard{}
+// 	err := r.client.Get(context.TODO(), types.NamespacedName{
+// 		Name:      s.Name,
+// 		Namespace: instance.Namespace,
+// 	}, found)
+// 	if err != nil && errors.IsNotFound(err) {
 
-		// Create the GrafanaDashboard
-		log.Info("Creating a new GrafanaDashboard", "GrafanaDashboard.Namespace", s.Namespace, "GrafanaDashboard.Name", s.Name)
-		err = r.client.Create(context.TODO(), s)
+// 		// Create the GrafanaDashboard
+// 		log.Info("Creating a new GrafanaDashboard", "GrafanaDashboard.Namespace", s.Namespace, "GrafanaDashboard.Name", s.Name)
+// 		err = r.client.Create(context.TODO(), s)
 
-		if err != nil {
-			// Creation failed
-			log.Error(err, "Failed to create new GrafanaDashboard", "GrafanaDashboard.Namespace", s.Namespace, "GrafanaDashboard.Name", s.Name)
-			return &reconcile.Result{}, err
-		} else {
-			// Creation was successful
-			return nil, nil
-		}
-	} else if err != nil {
-		// Error that isn't due to the service not existing
-		log.Error(err, "Failed to get GrafanaDashboard")
-		return &reconcile.Result{}, err
-	}
+// 		if err != nil {
+// 			// Creation failed
+// 			log.Error(err, "Failed to create new GrafanaDashboard", "GrafanaDashboard.Namespace", s.Namespace, "GrafanaDashboard.Name", s.Name)
+// 			return &reconcile.Result{}, err
+// 		} else {
+// 			// Creation was successful
+// 			return nil, nil
+// 		}
+// 	} else if err != nil {
+// 		// Error that isn't due to the service not existing
+// 		log.Error(err, "Failed to get GrafanaDashboard")
+// 		return &reconcile.Result{}, err
+// 	}
 
-	return nil, nil
-}
+// 	return nil, nil
+// }

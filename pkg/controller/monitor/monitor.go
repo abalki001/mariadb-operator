@@ -3,7 +3,6 @@ package monitor
 import (
 	"context"
 
-	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
 	grafanav1alpha1 "github.com/integr8ly/grafana-operator/pkg/apis/integreatly/v1alpha1"
 	mariadbv1alpha1 "github.com/persistentsys/mariadb-operator/pkg/apis/mariadb/v1alpha1"
 	"github.com/persistentsys/mariadb-operator/pkg/utils"
@@ -91,33 +90,33 @@ func (r *ReconcileMonitor) monitorService(v *mariadbv1alpha1.Monitor) *corev1.Se
 	return s
 }
 
-func (r *ReconcileMonitor) monitorServiceMonitor(v *mariadbv1alpha1.Monitor) *monitoringv1.ServiceMonitor {
-	labels := utils.ServiceMonitorLabels(v, monitorApp)
+// func (r *ReconcileMonitor) monitorServiceMonitor(v *mariadbv1alpha1.Monitor) *monitoringv1.ServiceMonitor {
+// 	labels := utils.ServiceMonitorLabels(v, monitorApp)
 
-	s := &monitoringv1.ServiceMonitor{
+// 	s := &monitoringv1.ServiceMonitor{
 
-		ObjectMeta: v12.ObjectMeta{
-			Name:      monitorServiceMonitorName(v),
-			Namespace: v.Namespace,
-			Labels:    labels,
-		},
-		Spec: monitoringv1.ServiceMonitorSpec{
+// 		ObjectMeta: v12.ObjectMeta{
+// 			Name:      monitorServiceMonitorName(v),
+// 			Namespace: v.Namespace,
+// 			Labels:    labels,
+// 		},
+// 		Spec: monitoringv1.ServiceMonitorSpec{
 
-			Endpoints: []monitoringv1.Endpoint{{
-				Path: "/metrics",
-				Port: monitorPortName,
-			}},
-			Selector: metav1.LabelSelector{
-				MatchLabels: map[string]string{
-					"tier": monitorApp,
-				},
-			},
-		},
-	}
+// 			Endpoints: []monitoringv1.Endpoint{{
+// 				Path: "/metrics",
+// 				Port: monitorPortName,
+// 			}},
+// 			Selector: metav1.LabelSelector{
+// 				MatchLabels: map[string]string{
+// 					"tier": monitorApp,
+// 				},
+// 			},
+// 		},
+// 	}
 
-	controllerutil.SetControllerReference(v, s, r.scheme)
-	return s
-}
+// 	controllerutil.SetControllerReference(v, s, r.scheme)
+// 	return s
+// }
 
 func (r *ReconcileMonitor) monitorGrafanaDashboard(v *mariadbv1alpha1.Monitor) *grafanav1alpha1.GrafanaDashboard {
 
@@ -153,9 +152,9 @@ func monitorServiceName(v *mariadbv1alpha1.Monitor) string {
 	return v.Name + "-service"
 }
 
-func monitorServiceMonitorName(v *mariadbv1alpha1.Monitor) string {
-	return v.Name + "-serviceMonitor"
-}
+// func monitorServiceMonitorName(v *mariadbv1alpha1.Monitor) string {
+// 	return v.Name + "-serviceMonitor"
+// }
 
 func (r *ReconcileMonitor) updateMonitorStatus(v *mariadbv1alpha1.Monitor) error {
 	err := r.client.Status().Update(context.TODO(), v)
