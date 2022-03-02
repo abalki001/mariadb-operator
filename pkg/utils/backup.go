@@ -6,7 +6,7 @@ const (
 )
 
 type DefaultBackupConfig struct {
-	Schedule       string `json:"schedule"`
+	Schedule   string `json:"schedule"`
 	BackupPath string `json:"backupPath"`
 }
 

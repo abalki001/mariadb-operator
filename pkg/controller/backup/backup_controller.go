@@ -82,8 +82,7 @@ type ReconcileBackup struct {
 	dbPod     *corev1.Pod
 	dbService *corev1.Service
 	bkpPV     *corev1.PersistentVolume
-	bkpPVC     *corev1.PersistentVolumeClaim
-
+	bkpPVC    *corev1.PersistentVolumeClaim
 }
 
 // Reconcile reads that state of the cluster for a Backup object and makes changes based on the state read
