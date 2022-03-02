@@ -3,13 +3,11 @@ package monitor
 import (
 	"context"
 
-	grafanav1alpha1 "github.com/integr8ly/grafana-operator/pkg/apis/integreatly/v1alpha1"
 	mariadbv1alpha1 "github.com/persistentsys/mariadb-operator/pkg/apis/mariadb/v1alpha1"
 	"github.com/persistentsys/mariadb-operator/pkg/utils"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
@@ -118,31 +116,31 @@ func (r *ReconcileMonitor) monitorService(v *mariadbv1alpha1.Monitor) *corev1.Se
 // 	return s
 // }
 
-func (r *ReconcileMonitor) monitorGrafanaDashboard(v *mariadbv1alpha1.Monitor) *grafanav1alpha1.GrafanaDashboard {
+// func (r *ReconcileMonitor) monitorGrafanaDashboard(v *mariadbv1alpha1.Monitor) *grafanav1alpha1.GrafanaDashboard {
 
-	labels := utils.ServiceMonitorLabels(v, monitorApp)
+// 	labels := utils.ServiceMonitorLabels(v, monitorApp)
 
-	s := &grafanav1alpha1.GrafanaDashboard{
-		ObjectMeta: v12.ObjectMeta{
-			Name:      "GrafanaDashboard",
-			Namespace: v.Namespace,
-			Labels:    labels,
-		},
-		Spec: grafanav1alpha1.GrafanaDashboardSpec{
-			Json: DashboardJSON,
-			Name: "mariadb.json",
-			Plugins: []grafanav1alpha1.GrafanaPlugin{
-				{
-					Name:    "grafana-piechart-panel",
-					Version: "1.5.0",
-				},
-			},
-		},
-	}
+// 	s := &grafanav1alpha1.GrafanaDashboard{
+// 		ObjectMeta: v12.ObjectMeta{
+// 			Name:      "GrafanaDashboard",
+// 			Namespace: v.Namespace,
+// 			Labels:    labels,
+// 		},
+// 		Spec: grafanav1alpha1.GrafanaDashboardSpec{
+// 			Json: DashboardJSON,
+// 			Name: "mariadb.json",
+// 			Plugins: []grafanav1alpha1.GrafanaPlugin{
+// 				{
+// 					Name:    "grafana-piechart-panel",
+// 					Version: "1.5.0",
+// 				},
+// 			},
+// 		},
+// 	}
 
-	controllerutil.SetControllerReference(v, s, r.scheme)
-	return s
-}
+// 	controllerutil.SetControllerReference(v, s, r.scheme)
+// 	return s
+// }
 
 func monitorDeploymentName(v *mariadbv1alpha1.Monitor) string {
 	return v.Name + "-deployment"
