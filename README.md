@@ -236,10 +236,30 @@ Run the command to delete all resources:
 # make uninstall
 ```
 
+## Kustomize
 
+The operator can also be installed using
+[kustomize](https://kubectl.docs.kubernetes.io/references/kustomize/). This will
+install only the CRDs and operator. It can be used in a `kustomization.yaml`
+file:
 
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - github.com/abalki001/mariadb-operator/deploy
+```
 
+This can then be applied using
 
+```
+# kubectl apply -k .
+```
 
+Kustomize allows resources to be patched through layers to match what is
+required in the target environment. For example, the namespace can be set by
+adding the following to `kustomization.yaml`:
 
-
+```yaml
+namespace: some-namespace
+```
